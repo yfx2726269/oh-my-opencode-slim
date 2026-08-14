@@ -24,6 +24,66 @@ interface SkillEntry {
   block: string;
 }
 
+/**
+ * Superpowers 执行类 skill,对 orchestrator 隔离:orchestrator 负责规划与委派,
+ * 这些 skill 会把它拉入自执行工作流,由 omo 的 deepwork + 委派策略替代。
+ */
+const ORCHESTRATOR_ISOLATED_SKILLS = [
+  'subagent-driven-development',
+  'executing-plans',
+  'systematic-debugging',
+] as const;
+
+/**
+ * omo 的 deepwork(orchestrator-only)对非 orchestrator agent(build 模式,
+ * 由 superpowers skill 驱动自执行)隔离。
+ */
+const BUILD_MODE_ISOLATED_SKILLS = ['deepwork'] as const;
+
+function isOrchestratorAgent(agentName: string): boolean {
+  if (agentName === 'orchestrator') {
+    return true;
+  }
+  // 含 alias 解析:若 agentName 是某个 alias 指向的 orchestrator,视为 orchestrator
+  return (
+    Object.keys(AGENT_ALIASES).find(
+      (aliasKey) => AGENT_ALIASES[aliasKey] === agentName,
+    ) === 'orchestrator'
+  );
+}
+
+/**
+ * 按 agent 模式追加隔离规则。仅当用户未显式配置该 skill 时生效,
+ * 用户显式配置(allow/ask/deny 任一形式)优先,不被覆盖。
+ * 隔离规则显式加入 deny 条目,压过 `*` 通配放行。
+ */
+function applyAgentIsolationRules(
+  agentName: string,
+  skillList: readonly string[] | undefined,
+  permissionRules: Record<string, SkillRule>,
+): void {
+  const isolatedSkills = isOrchestratorAgent(agentName)
+    ? ORCHESTRATOR_ISOLATED_SKILLS
+    : BUILD_MODE_ISOLATED_SKILLS;
+
+  const userConfiguredSkills = new Set<string>();
+  if (skillList) {
+    for (const entry of skillList) {
+      if (entry === '*') {
+        continue;
+      }
+      userConfiguredSkills.add(entry.startsWith('!') ? entry.slice(1) : entry);
+    }
+  }
+
+  for (const skillName of isolatedSkills) {
+    if (userConfiguredSkills.has(skillName)) {
+      continue;
+    }
+    permissionRules[skillName] = 'deny';
+  }
+}
+
 function getCurrentAgent(messages: MessageWithParts[]): string {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
@@ -118,6 +178,8 @@ export function createFilterAvailableSkillsHook(
       agentConfig?.skills,
       runtime.disabledSkills,
     );
+    // 按 agent 模式追加隔离规则(用户显式配置优先)
+    applyAgentIsolationRules(agentName, agentConfig?.skills, permissionRules);
     permissionRulesByAgent.set(agentName, permissionRules);
     return permissionRules;
   };
