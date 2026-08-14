@@ -6,7 +6,7 @@
 
 | 文件 | 用途 |
 |------|------|
-| `orchestrator_append.md` | orchestrator 追加 prompt:子 agent 委派规则 + 框架协作策略(双模式:orchestrator 调度器 × superpowers 方法论) |
+| `orchestrator_append.md` | orchestrator 追加 prompt(**英文编写**,术语与 omo orchestrator 基础 prompt 及 superpowers skill 原文严格对齐):sub-agent 委派规则 + 框架协作策略(双模式:opencode 调度器 × superpowers 方法论) |
 
 ## 安装方法
 
