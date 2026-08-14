@@ -19,7 +19,7 @@ export interface PermissionOnlySkill {
  */
 export const PERMISSION_ONLY_SKILLS: PermissionOnlySkill[] = [
   {
-    name: 'requesting-code-review',
+    name: 'code-review',
     allowedAgents: ['oracle'],
     description:
       'Code review template for reviewer subagents in multi-step workflows',
