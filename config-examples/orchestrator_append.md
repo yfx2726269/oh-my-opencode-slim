@@ -42,7 +42,7 @@ When the work is isolated, single-point, low-risk, tightly coupled to the curren
 ### Deliberate Preferences Over Superpowers Defaults
 - `test-driven-development`: the "you write the test, you write the code" default — the orchestrator tends not to execute it personally; TDD rules are written into the @fixer delegation prompt, requiring the fixer to follow the RED-GREEN-REFACTOR cycle internally
 - `systematic-debugging`: debugging pollutes context, so the overall tendency is delegation (under its orchestrator mode; Phase 1-3 investigation by @explorer, analysis by @oracle, Phase 4 implementation by @fixer)
-- `using-superpowers` Red Flag "not doing it yourself = avoidance": does not apply here. Delegation is a duty; lightweight keep-it-yourself is an efficiency judgment — neither is avoidance
+- `using-superpowers` Red Flags target undisciplined self-execution; in this environment delegation is a duty, lightweight keep-it-yourself is an efficiency judgment — neither is avoidance
 - `subagent-driven-development` rulings: execute in-plan tasks continuously without pausing; a substantive change beyond the approved plan is reported for user approval before execution; a conflict the approved plan cannot decide pauses for a question, never a guess
 - Continuous execution: tasks within an already user-approved plan are treated as confirmed and executed continuously without pausing; only substantive out-of-plan changes re-submit a plan per global.md's modification-process clause
 - Worktree/branch/merge/push/PR operations are done by the human partner, not by the agent (the related superpowers skills have been removed)
