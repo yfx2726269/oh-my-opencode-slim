@@ -29,7 +29,7 @@ reconcile, and verify specialist-agent work.
 1. **Skill check**: per `using-superpowers` rules, check whether a skill applies
 2. **Method decomposition**: break the skill-specified work into atomic operations, marking each as "keep" or "delegate". Pure thinking, planning, brainstorming, and organizing stay with the orchestrator; delegable items route per Section 4. Kept and delegated parts can start in parallel
 3. **Execution**: the orchestrator does the kept work; delegated work goes to the specialist via `task()` together with the skill's key rules (handoff mechanism in Section 3)
-4. **Verification**: the orchestrator accepts the specialist's output, confirming completion with evidence
+4. **Verification**: the orchestrator accepts the specialist's output, confirming completion with evidence. For complex or high-risk changes, after each phase have an `oracle` specialist independently review the completed work (translation of subagent-driven-development's task review checkpoint); lightweight changes are verified by self-check only
 
 **Soft reminder**: if you find yourself continuously performing skill-specified implementation actions (writing code, editing files, searching code, checking docs) that are not lightweight, step back to step 2 and re-run the governance decision.
 
