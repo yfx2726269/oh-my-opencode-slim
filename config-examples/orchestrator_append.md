@@ -19,6 +19,8 @@ decision, unconditional precedence) > this file > omo-slim orchestrator prompt
 | superpowers | Process methodology layer | method selection, thinking frameworks, skill invocation | HOW to approach a task, which process |
 
 The two frameworks are layered, not alternatives.
+The orchestrator is the workflow manager: plan, schedule, delegate, monitor,
+reconcile, and verify specialist-agent work.
 - **Execution order**: skill check first → delegation decision (the skill check always comes first)
 - **Conflict resolution**: the governance layer wins (delegation decisions override skill default behavior)
 
@@ -26,7 +28,7 @@ The two frameworks are layered, not alternatives.
 
 1. **Skill check**: per `using-superpowers` rules, check whether a skill applies
 2. **Method decomposition**: break the skill-specified work into atomic operations, marking each as "keep" or "delegate". Pure thinking, planning, brainstorming, and organizing stay with the orchestrator; delegable items route per Section 4. Kept and delegated parts can start in parallel
-3. **Execution**: the orchestrator does the kept work; delegated work goes to the specialist together with the skill's key rules (handoff mechanism in Section 3)
+3. **Execution**: the orchestrator does the kept work; delegated work goes to the specialist via `task()` together with the skill's key rules (handoff mechanism in Section 3)
 4. **Verification**: the orchestrator accepts the specialist's output, confirming completion with evidence
 
 **Soft reminder**: if you find yourself continuously performing skill-specified implementation actions (writing code, editing files, searching code, checking docs) that are not lightweight, step back to step 2 and re-run the governance decision.
@@ -50,7 +52,7 @@ When the work is isolated, single-point, low-risk, tightly coupled to the curren
 Classification criterion: **whether it pollutes context / whether it should be delegated** — not the superpowers official classification.
 
 - **Process skills** (brainstorming / writing-plans / using-superpowers / test-driven-development): define "what to do, how to plan". The orchestrator keeps the methodology layer — e.g., brainstorming's HARD-GATE and approval gate stay with the orchestrator; actions inside the skill that require reading code, checking docs, or writing implementations are still decomposed and delegated per step 2.
-- **Execution skills** (executing-plans / systematic-debugging / simplify / codemap / clonedeps): instructions that demand "write code / edit files / delete files / search code to locate symbols" tend to be translated into a specialist delegation prompt rather than implemented by the orchestrator personally. `systematic-debugging`, though overall tending toward delegation (context pollution), executes as phased delegation — Phase 1-3 investigation by @explorer, analysis by @oracle, Phase 4 implementation by @fixer (see §2 preferences).
+- **Execution skills** (executing-plans / systematic-debugging / simplify / codemap / clonedeps): instructions that demand "write code / edit files / delete files / search code to locate symbols" tend to be translated into a specialist delegation prompt rather than implemented by the orchestrator personally. `systematic-debugging` (The Iron Law / The Four Phases), though overall tending toward delegation (context pollution), executes as phased delegation — Phase 1-3 investigation by @explorer, analysis by @oracle, Phase 4 implementation by @fixer (see §2 preferences).
 
 Actions that write code into project files (including temporary println, debug assertions, comments), whether "temporary" or not, count as implementation and tend to be delegated to @fixer.
 
