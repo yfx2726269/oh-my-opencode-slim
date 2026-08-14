@@ -108,6 +108,39 @@ have Bun installed:
 npx oh-my-opencode-slim@latest install
 ```
 
+### Installing this Fork
+
+This repository is a personal fork of oh-my-opencode-slim. The fork is
+distributed **via git only** — the npm package name stays the upstream
+`oh-my-opencode-slim` and this fork does not publish to npm. Add the fork
+repository (`bit-self` branch) directly as the plugin source:
+
+```json
+{
+  "plugin": ["git+https://github.com/yfx2726269/oh-my-opencode-slim.git#bit-self"]
+}
+```
+
+Alternatively, clone, build, and point the plugin entry at the local path:
+
+```bash
+git clone -b bit-self https://github.com/yfx2726269/oh-my-opencode-slim.git ~/repos/oh-my-opencode-slim
+cd ~/repos/oh-my-opencode-slim
+bun install
+bun run build
+bun dist/cli/index.js install
+```
+
+Fork versions carry a `-bit.` prerelease marker (e.g. `2.2.14-bit.1`). In fork
+builds the companion update check and the plugin's own npm auto-update check
+are disabled, because neither the companion binary nor the npm package is
+published by this fork.
+
+Recommended prompt/configuration templates for this fork live in
+[`config-examples/`](config-examples/) — see
+[`config-examples/README.md`](config-examples/README.md) for install notes and
+the differences from the upstream defaults.
+
 ### Run from Master
 
 Use this if you want the latest code, easier bug fixes, or a local setup for

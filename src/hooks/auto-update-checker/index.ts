@@ -2,6 +2,7 @@ import * as path from 'node:path';
 import type { PluginInput } from '@opencode-ai/plugin';
 import {
   ensureCompanionVersion,
+  isForkPackageVersion,
   loadCompanionManifestFromPackageRoot,
 } from '../../companion/updater';
 import { TOAST_DURATION_MS } from '../../config/constants';
@@ -136,6 +137,16 @@ async function runBackgroundUpdateCheck(
   const currentVersion = cachedVersion ?? pluginInfo.pinnedVersion;
   if (!currentVersion) {
     log('[auto-update-checker] No version found (cached or pinned)');
+    showStagedSkillsReviewToast(ctx, stagedSkillsThisUpdate);
+    return;
+  }
+
+  // fork 版本不发布 npm 包,registry 上是上游同名包;直接跳过更新检查、
+  // 不查询 registry,避免 fork 用户被提示/自动更新到上游版本而丢失 fork 定制。
+  if (isForkPackageVersion(currentVersion)) {
+    log(
+      `[auto-update-checker] Fork build (${currentVersion}); skipping update check`,
+    );
     showStagedSkillsReviewToast(ctx, stagedSkillsThisUpdate);
     return;
   }

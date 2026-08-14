@@ -66,11 +66,18 @@ export const COMPANION_MANIFEST: CompanionManifest = {
 };
 
 /**
+ * 本 fork 的版本标记(fork 包版本形如 `2.2.14-bit.1`,prerelease id 为 `bit`)。
+ * fork 不发布 npm 包与 companion 二进制,所有 fork 判定(companion 更新检查、
+ * 插件自身 auto-update 检查)都以此标记为准;标记格式变更时只需改这一处。
+ */
+export const FORK_VERSION_PREFIX = '-bit.';
+
+/**
  * 判断版本号是否带本 fork 的发布标记(形如 `2.2.14-bit.1`)。
  * fork 不发布自己的 companion 二进制,带该标记时应禁用 companion 更新检查。
  */
 export function isForkPackageVersion(version: string): boolean {
-  return version.includes('-bit.');
+  return version.includes(FORK_VERSION_PREFIX);
 }
 
 export function getCompanionTarget(): string | null {

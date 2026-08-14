@@ -47,7 +47,8 @@ const SYMBOLS = {
   star: `${YELLOW}★${RESET}`,
 };
 
-const GITHUB_REPO = 'alvinunreal/oh-my-opencode-slim';
+// star 引导/仓库链接指向本 fork(fork 用户 star 的是 fork 仓库,不是上游)。
+const GITHUB_REPO = 'yfx2726269/oh-my-opencode-slim';
 const GITHUB_URL = `https://github.com/${GITHUB_REPO}`;
 
 function printHeader(isUpdate: boolean): void {

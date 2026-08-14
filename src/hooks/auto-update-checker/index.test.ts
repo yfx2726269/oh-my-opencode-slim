@@ -43,6 +43,7 @@ const companionUpdaterMocks = {
     binaryPath: '/tmp/companion',
     version: '0.1.2',
   })),
+  isForkPackageVersion: mock(() => false),
   loadCompanionManifestFromPackageRoot: mock(() => null),
 };
 
@@ -177,6 +178,8 @@ describe('auto-update-checker/index', () => {
         version: '0.1.2',
       }),
     );
+    companionUpdaterMocks.isForkPackageVersion.mockReset();
+    companionUpdaterMocks.isForkPackageVersion.mockImplementation(() => false);
     companionUpdaterMocks.loadCompanionManifestFromPackageRoot.mockReset();
     companionUpdaterMocks.loadCompanionManifestFromPackageRoot.mockImplementation(
       () => null,
@@ -210,6 +213,35 @@ describe('auto-update-checker/index', () => {
     expect(showToast).not.toHaveBeenCalled();
     expect(checkerMocks.findPluginEntry).not.toHaveBeenCalled();
     expect(checkerMocks.getLatestVersion).not.toHaveBeenCalled();
+  });
+
+  test('skips update checks for fork builds without querying the registry', async () => {
+    companionUpdaterMocks.isForkPackageVersion.mockImplementation(() => true);
+    checkerMocks.findPluginEntry.mockImplementation(() => ({
+      pinnedVersion: null,
+      isPinned: false,
+    }));
+    checkerMocks.getCachedVersion.mockImplementation(() => '2.2.14-bit.1');
+    checkerMocks.getLatestCompatibleVersion.mockImplementation(async () => {
+      throw new Error('registry must not be queried for fork builds');
+    });
+
+    const { createAutoUpdateCheckerHook } = await import(
+      `./index?test=${importCounter++}`
+    );
+    const { ctx, showToast } = createCtx();
+
+    createAutoUpdateCheckerHook(ctx as never).event({
+      event: { type: 'session.created', properties: {} },
+    });
+    await waitForCalls(logMock);
+
+    expect(showToast).not.toHaveBeenCalled();
+    expect(checkerMocks.extractChannel).not.toHaveBeenCalled();
+    expect(checkerMocks.getLatestCompatibleVersion).not.toHaveBeenCalled();
+    expect(companionUpdaterMocks.isForkPackageVersion).toHaveBeenCalledWith(
+      '2.2.14-bit.1',
+    );
   });
 
   test('shows success toast after updating the active install root', async () => {
