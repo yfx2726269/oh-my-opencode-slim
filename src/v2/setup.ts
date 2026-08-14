@@ -166,7 +166,7 @@ export function createV2Setup(): (ctx: V2Context) => Promise<V2Cleanup> {
       log('[v2] tool.transform failed', String(err));
     }
 
-    // ── Commands (deepwork / reflect / loop slash commands) ──
+    // ── Commands (reflect / loop slash commands) ──
     try {
       const entries = Object.entries(synthCommands ?? {});
       if (entries.length > 0) {

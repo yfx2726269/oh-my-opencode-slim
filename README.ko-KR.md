@@ -36,7 +36,7 @@ oh-my-opencode-slim은 OpenCode용 에이전트 오케스트레이션 플러그�
 - **[백그라운드 오케스트레이션](docs/background-orchestration.md)** -
   Orchestrator가 전문 에이전트를 백그라운드 작업으로 배치하고, 추적하며,
   계속 진행하기 전에 결과를 조정합니다. 기본적으로 병렬 작업을 수행합니다.
-- **[번들 스킬](#skills)** - `deepwork`, `codemap`,
+- **[번들 스킬](#skills)** - `codemap`,
   `verification-planning`, `reflect` 같은 프롬프트 기반 워크플로를 에이전트별로
   할당합니다.
 - **[Council](docs/council.md)** - 여러 모델에 같은 질문을 병렬로 실행하고
@@ -579,7 +579,7 @@ ping all agents
 스킬은 에이전트의 시스템 프롬프트에 주입되어 판단, 워크플로, 도구 사용을
 안내하는 프롬프트 기반 지침입니다. 실행 중인 서버인 MCP와 달리 스킬은
 프로세스를 실행하지 않습니다. 작업에 맞춰 에이전트가 활성화하는 집중형
-플레이북입니다. 인스톨러는 7개의 스킬을 번들로 제공하고 플러그인 자동
+플레이북입니다. 인스톨러는 6개의 스킬을 번들로 제공하고 플러그인 자동
 업데이트 시 최신 상태로 유지하며, 로컬 사용자 지정은 보존합니다.
 
 > [!TIP]
@@ -590,7 +590,6 @@ ping all agents
 | 스킬 | 용도 | 기본 에이전트 | 호출 방법 |
 |:----:|------|---------------|-----------|
 | <img src="img/skills/codemap.webp" width="120" alt="Codemap artifact"><br>[`codemap`](src/skills/codemap/SKILL.md) | 에이전트가 모든 것을 다시 읽지 않고 코드베이스를 이해하도록 돕는 계층형 저장소 지도 | `orchestrator` | `run codemap` |
-| <img src="img/skills/deepwork.webp" width="120" alt="Deepwork artifact"><br>[`deepwork`](src/skills/deepwork/SKILL.md) | 검토 게이트를 갖춘 대규모·고위험·다단계 코딩 세션용 구조화된 워크플로 | `orchestrator` | `/deepwork <task>` |
 | <img src="img/skills/verification-planning.webp" width="120" alt="Verification Planning artifact"><br>[`verification-planning`](src/skills/verification-planning/SKILL.md) | 중요한 변경 전에 프로젝트별 증거 경로를 미리 계획 | `orchestrator` | 중요한 작업 전 자동 |
 | <img src="img/skills/simplify.webp" width="120" alt="Simplify artifact"><br>[`simplify`](src/skills/simplify/SKILL.md) | 가독성과 유지보수성을 위한 동작 보존 단순화 | `oracle` | 단순화를 요청하거나 리뷰 중 |
 | <img src="img/skills/clonedeps.webp" width="120" alt="Clonedeps artifact"><br>[`clonedeps`](src/skills/clonedeps/SKILL.md) | 에이전트가 라이브러리 내부를 검사하도록 의존성 소스를 로컬에 복제 | `orchestrator` | `clone dependencies` |
@@ -660,7 +659,7 @@ bunx oh-my-opencode-slim@latest install --companion=yes
 | **[Project Customization](docs/project-local-customization.md)** | 저장소별 커스텀 에이전트, 프롬프트 오버라이드, 에이전트별 스킬 및 우선순위 |
 | **[Background Orchestration](docs/background-orchestration.md)** | 네이티브 백그라운드 서브에이전트를 기반으로 한 스케줄러 우선 Orchestrator 모델 |
 | **[Maintainer Guide](docs/maintainers.md)** | 이슈 트리아지 규칙, 라벨 의미, 지원 라우팅, 저장소 유지보수 워크플로우 |
-| **[Skills](docs/skills.md)** | `simplify`, `codemap`, `clonedeps`, `deepwork`, `verification-planning`, `reflect`, `oh-my-opencode-slim` 등 번들된 스킬 |
+| **[Skills](docs/skills.md)** | `simplify`, `codemap`, `clonedeps`, `verification-planning`, `reflect`, `oh-my-opencode-slim` 등 번들된 스킬 |
 | **[MCPs](docs/mcps.md)** | `context7`, `gh_grep` 및 에이전트별 MCP 권한 동작 방식 |
 | **[Tools](docs/tools.md)** | `webfetch`, LSP 도구, 코드 검색, 포매터 등 내장 도구 기능 |
 

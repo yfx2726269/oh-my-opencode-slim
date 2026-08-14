@@ -70,7 +70,7 @@ describe('loop command hook', () => {
     const output = { parts: [{ type: 'text' as const, text: 'original' }] };
 
     await hook.handleCommandExecuteBefore(
-      { command: 'deepwork', sessionID: 's1', arguments: 'x' },
+      { command: 'reflect', sessionID: 's1', arguments: 'x' },
       output,
     );
 

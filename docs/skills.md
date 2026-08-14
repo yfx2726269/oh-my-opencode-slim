@@ -29,7 +29,6 @@ broader evidence only when the change's risk or uncertainty warrants it.
 | [`simplify`](#simplify) | Behavior-preserving code simplification | `oracle` |
 | [`codemap`](#codemap) | Repository codemap generation | `orchestrator` |
 | [`clonedeps`](#clonedeps) | Local dependency source cloning | `orchestrator` |
-| [`deepwork`](#deepwork) | Heavy/complex coding sessions workflow | `orchestrator` |
 | [`verification-planning`](#verification-planning) | Design project-specific evidence before implementation | `orchestrator` |
 | [`reflect`](#reflect) | Review repeated work and suggest reusable workflow improvements | `orchestrator` |
 | [`oh-my-opencode-slim`](#oh-my-opencode-slim) | Plugin configuration and self-improvement guidance | `orchestrator` |
@@ -99,50 +98,6 @@ See **[Clonedeps](clonedeps.md)** for the full workflow and file layout.
 
 ---
 
-## deepwork
-
-**Heavy/complex coding sessions and large modifications workflow.**
-
-`deepwork` is an orchestrator-only workflow skill for managing deep architectural work, multi-phase implementations, and complex refactoring. It provides a structured approach with risk-based review gates while maintaining flexibility in planning.
-
-Start it directly with:
-
-```text
-/deepwork <heavy coding task>
-```
-
-**How it works:**
-1. Before planning, delegation, or state creation, inspect `.gitignore` and
-   `.ignore`; add only missing entries (without duplicates) for
-   `.slim/deepwork/` in `.gitignore` and `!.slim/deepwork/` plus
-   `!.slim/deepwork/**` in `.ignore`. This keeps state git-local while making it
-   readable to OpenCode.
-2. Orchestrator creates a session artifact at `.slim/deepwork/<task>.md`
-3. Draft a phased implementation plan with a small number of coherent phases
-   based on dependencies and natural delivery boundaries. Do not split work
-   merely to make an Oracle review smaller.
-4. Before execution, show a compact overview of phase order, specialist
-   ownership/scope, the Oracle review total, the review after each phase, and a
-   short reason for each gate.
-5. Execute phase by phase: validate, update session state, then get an Oracle
-   review before advancing.
-6. Batch material findings into one bounded remediation pass with focused
-   validation. Re-review only when needed to assess a changed decision/risk or
-   an otherwise unverifiable concern.
-
-**Key features:**
-- Persistent session state in markdown files
-- Predictable Oracle reviews after each planned phase, declared before execution
-- V2 scheduler integration (dispatch specialists, wait for hook-driven completion, reconcile)
-- OpenCode todo lists for progress tracking
-- Flexible structure - orchestrator adapts format to task needs
-
-**When to use:** Large-scale refactoring, multi-file architectural changes, complex feature development spanning modules.
-
-**When NOT to use:** Simple single-file edits, trivial bug fixes, quick one-off changes.
-
----
-
 ## verification-planning
 
 **Design project-specific evidence before non-trivial implementation.**
@@ -167,8 +122,8 @@ constraints are unfamiliar or rapidly changing, it asks `@librarian` for focused
 official and project-specific research before deciding; it does not seek generic
 testing advice or research when current evidence is already decisive.
 
-**When NOT to use:** tiny mechanical edits. It complements ordinary verification
-and deepwork, does not prescribe a default mechanism, and requires approval for
+**When NOT to use:** tiny mechanical edits. It complements ordinary verification,
+does not prescribe a default mechanism, and requires approval for
 verification-only dependencies, persistent instrumentation, production debug
 surfaces, or structural changes. Temporary support is removed; durable support
 needs a clear justification. Completed work reports what was established and its

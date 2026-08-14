@@ -16,7 +16,6 @@ export {
   type TaggedSyntheticPartSpec,
 } from './cache-safe-injection';
 export { createChatHeadersHook } from './chat-headers';
-export { createDeepworkCommandHook } from './deepwork';
 export { createFilterAvailableSkillsHook } from './filter-available-skills';
 export {
   ForegroundFallbackManager,

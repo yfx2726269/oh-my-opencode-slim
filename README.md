@@ -36,8 +36,8 @@ The main idea is simple: instead of forcing one model to do everything, the plug
 - **[Background orchestration](docs/background-orchestration.md)** - the
   Orchestrator dispatches specialists as background tasks, tracks them, and
   reconciles results before continuing - parallel work by default.
-- **[Bundled skills](#skills)** - prompt-based workflows like `deepwork`,
-  `codemap`, `verification-planning`, and `reflect`, assigned per agent.
+- **[Bundled skills](#skills)** - prompt-based workflows like `codemap`,
+  `verification-planning`, and `reflect`, assigned per agent.
 - **[Council](docs/council.md)** - run multiple models in parallel on the same
   question and synthesize a single answer with `@council`.
 - **[Companion](docs/companion.md)** - an optional floating desktop window
@@ -154,7 +154,7 @@ To use it with `opencode2`, add the package to your v2 config
 ```
 
 Then run `opencode2`. The orchestrator + specialist agents, tools, slash
-commands (`/deepwork`, `/reflect`, `/loop`), and the system-prompt / message
+commands (`/reflect`, `/loop`), and the system-prompt / message
 transforms all work on v2. Configure agent models and any MCP servers in your
 v2 `opencode.json` (v2 has no programmatic MCP-registration hook, so built-in
 MCPs must be declared in config). See `docs/opencode-v2-compatibility.md` for the full
@@ -608,7 +608,7 @@ If any agent fails to respond, check your provider authentication and config fil
 Skills are prompt-based instructions injected into an agent's system prompt to
 guide decisions, workflows, and tool use. Unlike MCPs (which are running
 servers), a skill runs no process — it is a focused playbook an agent activates
-when the task calls for it. The installer bundles seven skills and keeps them
+when the task calls for it. The installer bundles six skills and keeps them
 updated on plugin auto-update; local customizations are preserved.
 
 > [!TIP]
@@ -619,7 +619,6 @@ updated on plugin auto-update; local customizations are preserved.
 | Skill | Purpose | Default agent | How to invoke |
 |:-----:|---------|---------------|---------------|
 | <img src="img/skills/codemap.webp" width="120" alt="Codemap artifact"><br>[`codemap`](src/skills/codemap/SKILL.md) | Hierarchical repository maps so agents understand codebases without re-reading everything | `orchestrator` | `run codemap` |
-| <img src="img/skills/deepwork.webp" width="120" alt="Deepwork artifact"><br>[`deepwork`](src/skills/deepwork/SKILL.md) | Structured workflow for large, risky, multi-phase coding sessions with review gates | `orchestrator` | `/deepwork <task>` |
 | <img src="img/skills/verification-planning.webp" width="120" alt="Verification Planning artifact"><br>[`verification-planning`](src/skills/verification-planning/SKILL.md) | Plans a project-specific evidence path before non-trivial changes | `orchestrator` | automatic before non-trivial work |
 | <img src="img/skills/simplify.webp" width="120" alt="Simplify artifact"><br>[`simplify`](src/skills/simplify/SKILL.md) | Behavior-preserving simplification for readability and maintainability | `oracle` | ask for simplification or during review |
 | <img src="img/skills/clonedeps.webp" width="120" alt="Clonedeps artifact"><br>[`clonedeps`](src/skills/clonedeps/SKILL.md) | Clones dependency source locally so agents can inspect library internals | `orchestrator` | `clone dependencies` |
@@ -691,7 +690,7 @@ Use this section as a map: start with installation, then jump to features, confi
 | **[Project Customization](docs/project-local-customization.md)** | Repository-specific custom agents, prompt overrides, per-agent skills, and precedence |
 | **[Background Orchestration](docs/background-orchestration.md)** | Scheduler-first orchestrator model built around native background subagents |
 | **[Maintainer Guide](docs/maintainers.md)** | Issue triage rules, label meanings, support routing, and repo maintenance workflow |
-| **[Skills](docs/skills.md)** | Bundled skills such as `simplify`, `codemap`, `clonedeps`, `deepwork`, `verification-planning`, `reflect`, and `oh-my-opencode-slim` |
+| **[Skills](docs/skills.md)** | Bundled skills such as `simplify`, `codemap`, `clonedeps`, `verification-planning`, `reflect`, and `oh-my-opencode-slim` |
 | **[MCPs](docs/mcps.md)** | `context7`, `gh_grep`, and how MCP permissions work per agent |
 | **[Tools](docs/tools.md)** | Built-in tool capabilities like `webfetch`, LSP tools, code search, and formatters |
 

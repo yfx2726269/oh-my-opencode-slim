@@ -20,7 +20,6 @@
 | `codemap/` | General-purpose | Repository mapping and codebase documentation skill |
 | `clonedeps/` | General-purpose | Workflow skill for dependency source mirroring and inspection |
 | `simplify/` | General-purpose | Readability and maintainability guidance skill |
-| `deepwork/` | Orchestrator-only | Heavy coding sessions, multi-phase implementation, and risky refactors |
 | `verification-planning/` | Orchestrator-only | Project-specific evidence planning and verification affordances before non-trivial implementation |
 | `reflect/` | Orchestrator-only | Learning from repeated work and suggesting reusable improvements |
 | `oh-my-opencode-slim/` | Orchestrator-only | Plugin configuration and self-improvement guidance |
@@ -55,7 +54,6 @@
   - `src/skills/simplify/SKILL.md`
   - `src/skills/codemap/SKILL.md`
   - `src/skills/clonedeps/SKILL.md`
-  - `src/skills/deepwork/SKILL.md`
   - `src/skills/verification-planning/SKILL.md`
   - `src/skills/reflect/SKILL.md`
   - `src/skills/oh-my-opencode-slim/SKILL.md`

@@ -410,10 +410,10 @@ describe('auto-update-checker/index', () => {
       installed: ['reflect'],
       skippedExisting: [],
       failed: [],
-      staged: ['deepwork'],
+      staged: ['simplify'],
       adopted: [],
-      customized: ['deepwork', 'my-custom-skill'],
-      stagedThisSync: ['deepwork'],
+      customized: ['simplify', 'my-custom-skill'],
+      stagedThisSync: ['simplify'],
     }));
 
     const { createAutoUpdateCheckerHook } = await import(
@@ -429,7 +429,7 @@ describe('auto-update-checker/index', () => {
       body: {
         title: 'OMO-Slim Updated!',
         message:
-          'v0.9.1 → v0.9.11\nAdded bundled skills: reflect\nStaged skill updates require manual review: deepwork\nRestart OpenCode to apply the plugin update.',
+          'v0.9.1 → v0.9.11\nAdded bundled skills: reflect\nStaged skill updates require manual review: simplify\nRestart OpenCode to apply the plugin update.',
         variant: 'success',
         duration: 8000,
       },

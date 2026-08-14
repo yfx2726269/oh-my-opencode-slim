@@ -24,7 +24,7 @@ Use this skill when the user asks about or is likely to benefit from changes to:
 - custom agents under `agents.<name>`
 - custom agent `prompt` and `orchestratorPrompt` blocks
 - skills, MCP permissions, tool access, or disabled agents
-- background orchestration, session reuse, multiplexer panes, or deepwork
+- background orchestration, session reuse, or multiplexer panes
 - recurring workflow friction that could be fixed by a prompt/config change
 
 Also use it proactively, with restraint, when a session reveals a repeatable

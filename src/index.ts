@@ -18,7 +18,6 @@ import {
   createAutoUpdateCheckerHook,
   createCacheMonitorHook,
   createChatHeadersHook,
-  createDeepworkCommandHook,
   createFilterAvailableSkillsHook,
   createJsonErrorRecoveryHook,
   createLoopCommandHook,
@@ -147,7 +146,6 @@ export const OhMyOpenCodeLite: Plugin = async (ctx) => {
 
   let chatHeadersHook: ReturnType<typeof createChatHeadersHook>;
   let foregroundFallback: ForegroundFallbackManager;
-  let deepworkCommandHook: ReturnType<typeof createDeepworkCommandHook>;
   let reflectCommandHook: ReturnType<typeof createReflectCommandHook>;
   let loopCommandHook: ReturnType<typeof createLoopCommandHook>;
   let taskSessionManagerHook: ReturnType<typeof createTaskSessionManagerHook>;
@@ -323,7 +321,6 @@ export const OhMyOpenCodeLite: Plugin = async (ctx) => {
       sessionLifecycle,
     );
 
-    deepworkCommandHook = createDeepworkCommandHook();
     reflectCommandHook = createReflectCommandHook();
     loopCommandHook = createLoopCommandHook();
     taskSessionManagerHook = createTaskSessionManagerHook(ctx, {
@@ -851,7 +848,6 @@ export const OhMyOpenCodeLite: Plugin = async (ctx) => {
       }
 
       interviewManager.registerCommand(opencodeConfig);
-      deepworkCommandHook.registerCommand(opencodeConfig);
       reflectCommandHook.registerCommand(opencodeConfig);
       loopCommandHook.registerCommand(opencodeConfig);
     },
@@ -1052,15 +1048,6 @@ export const OhMyOpenCodeLite: Plugin = async (ctx) => {
 
     'command.execute.before': async (input, output) => {
       await interviewManager.handleCommandExecuteBefore(
-        input as {
-          command: string;
-          sessionID: string;
-          arguments: string;
-        },
-        output as { parts: Array<{ type: string; text?: string }> },
-      );
-
-      await deepworkCommandHook.handleCommandExecuteBefore(
         input as {
           command: string;
           sessionID: string;

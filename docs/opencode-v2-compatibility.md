@@ -51,7 +51,7 @@ v2's plugin resolver tries the `server` subpath first
    - `agent` → `ctx.agent.transform` (model/prompt/permission adaptation +
      `subagent`/`execute` permission mapping + prompt rewrite `task`→`subagent`)
    - `tool` → `ctx.tool.transform` (zod shape → JSON schema; execute shimmed)
-   - `command` → `ctx.command.transform` (deepwork/reflect/loop)
+   - `command` → `ctx.command.transform` (reflect/loop)
    - `experimental.chat.system.transform` +
      `experimental.chat.messages.transform` → `ctx.session.hook("context")`
      (SystemPart[]/Message.content shape conversion)
@@ -70,7 +70,7 @@ the rest.
 | Agent prompts / system injection | ✅ | ✅ | via `session.hook("context")` |
 | Delegation to subagents | ✅ `task` | ✅ `subagent` | prompts rewritten for v2 |
 | Tools (ast-grep, webfetch, cancel_task, wait_for_user, acp_run) | ✅ | ✅* | `*` ast-grep/webfetch need `@ast-grep/napi`/`jsdom` resolvable |
-| Slash commands `/deepwork` `/reflect` `/loop` | ✅ | ✅ | |
+| Slash commands `/reflect` `/loop` | ✅ | ✅ | |
 | Message transforms (phase reminder, skills filter, image routing, display-name rewrite) | ✅ | ✅ | |
 | Event handling (session tracking, lifecycle) | ✅ | ✅ | |
 | Tool execute hooks (apply-patch recovery, task-session, json-recovery) | ✅ | ✅ | |
