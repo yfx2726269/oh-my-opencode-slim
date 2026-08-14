@@ -26,5 +26,5 @@ cp config-examples/orchestrator_append.md ~/.config/opencode/oh-my-opencode-slim
 
 ## 同步注意
 
-- 本机配置(`~/.config/opencode/oh-my-opencode-slim/orchestrator_append.md`)不会自动跟随本项目更新,如需最新推荐版本请重新复制
-- 测试机若使用本插件,也需复制本文件到测试机的对应配置目录(插件包不含此配置,配置文件不属于 npm 发布内容)
+- 本机配置(`~/.config/opencode/oh-my-opencode-slim/orchestrator_append.md`)不会自动跟随项目更新,如需最新推荐版本请重新复制
+- fork 通过 git 安装分发(`git+https://github.com/yfx2726269/oh-my-opencode-slim.git#bit-self`),仓库 clone 包含 config-examples,但**仍需手动复制本文件到配置目录**(`loadAgentPrompt` 只读配置目录,不读项目内文件)
