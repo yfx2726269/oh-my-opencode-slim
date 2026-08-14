@@ -546,7 +546,7 @@ ping all agents
 
 ## 🧩 Skills
 
-Skills 是注入智能体系统提示词的、基于提示词的指令，用于引导决策、工作流和工具使用。与 MCP（运行中的服务器）不同，Skill 不运行任何进程——它是智能体在任务需要时激活的专用操作手册。安装程序内置八个 Skill，并在插件自动更新时保持更新；本地自定义内容会被保留。
+Skills 是注入智能体系统提示词的、基于提示词的指令，用于引导决策、工作流和工具使用。与 MCP（运行中的服务器）不同，Skill 不运行任何进程——它是智能体在任务需要时激活的专用操作手册。安装程序内置七个 Skill，并在插件自动更新时保持更新；本地自定义内容会被保留。
 
 | Skill | 用途 | 默认智能体 | 调用方式 |
 |:-----:|------|------------|----------|
@@ -554,7 +554,6 @@ Skills 是注入智能体系统提示词的、基于提示词的指令，用于�
 | <img src="img/skills/deepwork.webp" width="120" alt="Deepwork artifact"><br>[`deepwork`](src/skills/deepwork/SKILL.md) | 面向大型、高风险、多阶段编码会话的结构化工作流，包含审查关卡 | `orchestrator` | `/deepwork <task>` |
 | <img src="img/skills/verification-planning.webp" width="120" alt="Verification Planning artifact"><br>[`verification-planning`](src/skills/verification-planning/SKILL.md) | 在非平凡变更前规划项目特定的证据路径 | `orchestrator` | 非平凡工作前自动调用 |
 | <img src="img/skills/simplify.webp" width="120" alt="Simplify artifact"><br>[`simplify`](src/skills/simplify/SKILL.md) | 保持行为不变地简化代码，提升可读性和可维护性 | `oracle` | 请求简化或在审查期间调用 |
-| <img src="img/skills/worktrees.webp" width="120" alt="Worktrees artifact"><br>[`worktrees`](src/skills/worktrees/SKILL.md) | 将 Git worktree 用作安全、隔离的编码通道，适合高风险或并行工作 | `orchestrator` | `work in a worktree` |
 | <img src="img/skills/clonedeps.webp" width="120" alt="Clonedeps artifact"><br>[`clonedeps`](src/skills/clonedeps/SKILL.md) | 在本地克隆依赖源码，供智能体检查库内部实现 | `orchestrator` | `clone dependencies` |
 | <img src="img/skills/reflect.webp" width="120" alt="Reflect artifact"><br>[`reflect`](src/skills/reflect/SKILL.md) | 将重复的工作流摩擦转化为可复用的 Skill、智能体或配置 | `orchestrator` | `/reflect` |
 | <img src="img/skills/oh-my-opencode-slim.webp" width="120" alt="oh-my-opencode-slim artifact"><br>[`oh-my-opencode-slim`](src/skills/oh-my-opencode-slim/SKILL.md) | 配置并安全改进插件设置本身 | `orchestrator` | 请求调整您的设置 |
@@ -602,7 +601,6 @@ bunx oh-my-opencode-slim@latest install --companion=yes
 | **[多路复用器集成](docs/multiplexer-integration.md)** | 在 Tmux、Zellij、Herdr 或 cmux 窗格中实时观看智能体工作 |
 | **[Codemap](docs/codemap.md)** | 生成层级代码地图，更快理解大型代码库 |
 | **[Clonedeps](docs/clonedeps.md)** | 将选定的依赖源码克隆到被忽略的本地工作区中以供检查 |
-| **[Worktrees](docs/worktrees.md)** | 使用 `.slim/worktrees/` 通道进行隔离的并行或高风险编码工作 |
 | **[预设切换](docs/preset-switching.md)** | 使用 `/preset` 在运行时切换智能体模型预设 |
 | **[Interview](docs/interview.md)** | 通过基于浏览器的问答流程，将粗略想法转成结构化 markdown 规格 |
 | **[Companion](docs/companion.md)** | 用于解析、帮助和类型信息的浮动窗口 companion |
@@ -616,7 +614,7 @@ bunx oh-my-opencode-slim@latest install --companion=yes
 | **[项目定制](docs/project-local-customization.md)** | 仓库特定的自定义智能体、提示词覆盖、按智能体分配的 Skill 以及优先级 |
 | **[后台编排](docs/background-orchestration.md)** | 围绕原生后台子智能体构建的调度器优先 Orchestrator 模型 |
 | **[维护者指南](docs/maintainers.md)** | issue 分流规则、标签含义、支持路由和仓库维护工作流 |
-| **[Skills](docs/skills.md)** | `simplify`、`codemap`、`clonedeps`、`deepwork`、`verification-planning`、`reflect`、`worktrees` 和 `oh-my-opencode-slim` 等捆绑技能 |
+| **[Skills](docs/skills.md)** | `simplify`、`codemap`、`clonedeps`、`deepwork`、`verification-planning`、`reflect` 和 `oh-my-opencode-slim` 等捆绑技能 |
 | **[MCPs](docs/mcps.md)** | `context7`、`gh_grep` 以及每个智能体的 MCP 权限机制 |
 | **[Tools](docs/tools.md)** | `webfetch`、LSP 工具、代码搜索和格式化工具等内置工具能力 |
 

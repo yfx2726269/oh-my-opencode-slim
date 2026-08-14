@@ -554,7 +554,7 @@ ping all agents
 
 ## 🧩 スキル
 
-スキルは、意思決定・ワークフロー・ツール使用を導くためにエージェントのシステムプロンプトへ注入される、プロンプトベースの指示です。実行中のサーバーである MCP とは異なり、スキルはプロセスを起動しません。必要に応じてエージェントが有効化する、目的に特化したプレイブックです。インストーラーは 8 個のスキルを同梱し、プラグインの自動更新時に更新します。ローカルでのカスタマイズは維持されます。
+スキルは、意思決定・ワークフロー・ツール使用を導くためにエージェントのシステムプロンプトへ注入される、プロンプトベースの指示です。実行中のサーバーである MCP とは異なり、スキルはプロセスを起動しません。必要に応じてエージェントが有効化する、目的に特化したプレイブックです。インストーラーは 7 個のスキルを同梱し、プラグインの自動更新時に更新します。ローカルでのカスタマイズは維持されます。
 
 | スキル | 目的 | デフォルトのエージェント | 呼び出し方 |
 |:-----:|---------|---------------|---------------|
@@ -562,7 +562,6 @@ ping all agents
 | <img src="img/skills/deepwork.webp" width="120" alt="Deepwork artifact"><br>[`deepwork`](src/skills/deepwork/SKILL.md) | レビューゲートを備えた、大規模・高リスク・複数フェーズのコーディングセッション用の構造化ワークフロー | `orchestrator` | `/deepwork <task>` |
 | <img src="img/skills/verification-planning.webp" width="120" alt="Verification Planning artifact"><br>[`verification-planning`](src/skills/verification-planning/SKILL.md) | 自明でない変更の前に、プロジェクト固有の証拠経路を計画 | `orchestrator` | 自明でない作業の前に自動実行 |
 | <img src="img/skills/simplify.webp" width="120" alt="Simplify artifact"><br>[`simplify`](src/skills/simplify/SKILL.md) | 可読性と保守性のための、振る舞いを変えない簡素化 | `oracle` | 簡素化を依頼するか、レビュー中に使用 |
-| <img src="img/skills/worktrees.webp" width="120" alt="Worktrees artifact"><br>[`worktrees`](src/skills/worktrees/SKILL.md) | リスクのある作業や並列作業のための、安全で隔離されたコーディングレーンとしての Git worktree | `orchestrator` | `work in a worktree` |
 | <img src="img/skills/clonedeps.webp" width="120" alt="Clonedeps artifact"><br>[`clonedeps`](src/skills/clonedeps/SKILL.md) | エージェントがライブラリ内部を調査できるよう、依存関係のソースをローカルにクローン | `orchestrator` | `clone dependencies` |
 | <img src="img/skills/reflect.webp" width="120" alt="Reflect artifact"><br>[`reflect`](src/skills/reflect/SKILL.md) | 繰り返すワークフローの摩擦を、再利用可能なスキル・エージェント・設定へ変換 | `orchestrator` | `/reflect` |
 | <img src="img/skills/oh-my-opencode-slim.webp" width="120" alt="oh-my-opencode-slim artifact"><br>[`oh-my-opencode-slim`](src/skills/oh-my-opencode-slim/SKILL.md) | プラグイン設定自体を安全に構成・改善 | `orchestrator` | セットアップの調整を依頼 |
@@ -610,7 +609,6 @@ bunx oh-my-opencode-slim@latest install --companion=yes
 | **[Multiplexer Integration](docs/multiplexer-integration.md)** | エージェントの動作を Tmux、Zellij、Herdr、cmux、や kitty のペインでライブ表示します |
 | **[Codemap](docs/codemap.md)** | 階層的なコードマップを生成し、大規模コードベースを迅速に理解します |
 | **[Clonedeps](docs/clonedeps.md)** | 選択した依存関係のソースを ignore 済みのローカルワークスペースにクローンし、調査できるようにします |
-| **[Worktrees](docs/worktrees.md)** | `.slim/worktrees/` lane を使い、隔離された並列または高リスクなコーディング作業を行います |
 | **[Preset Switching](docs/preset-switching.md)** | `/preset` で実行時にエージェントモデルのプリセットを切り替えます |
 | **[Interview](docs/interview.md)** | ブラウザベースの Q&A フローで、ざっくりとしたアイデアを構造化された Markdown 仕様に変換します |
 | **[Companion](docs/companion.md)** | 解析、ヘルプ、型情報のためのフローティングウィンドウ companion |
@@ -624,7 +622,7 @@ bunx oh-my-opencode-slim@latest install --companion=yes
 | **[Project Customization](docs/project-local-customization.md)** | リポジトリ固有のカスタムエージェント、プロンプト上書き、エージェントごとのスキル、および優先順位 |
 | **[Background Orchestration](docs/background-orchestration.md)** | ネイティブのバックグラウンドサブエージェントを中心にした、スケジューラー優先の Orchestrator モデル |
 | **[Maintainer Guide](docs/maintainers.md)** | Issue のトリアージルール、ラベルの意味、サポートの振り分け、リポジトリ運用ワークフロー |
-| **[Skills](docs/skills.md)** | `simplify`、`codemap`、`clonedeps`、`deepwork`、`verification-planning`、`reflect`、`worktrees`、`oh-my-opencode-slim` などの同梱スキル |
+| **[Skills](docs/skills.md)** | `simplify`、`codemap`、`clonedeps`、`deepwork`、`verification-planning`、`reflect`、`oh-my-opencode-slim` などの同梱スキル |
 | **[MCPs](docs/mcps.md)** | `context7`、`gh_grep`、およびエージェントごとの MCP 権限の仕組み |
 | **[Tools](docs/tools.md)** | `webfetch`、LSP ツール、コード検索、フォーマッターなどの組み込みツール機能 |
 

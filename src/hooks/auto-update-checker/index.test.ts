@@ -366,7 +366,7 @@ describe('auto-update-checker/index', () => {
       blockedByMajor: false,
     }));
     skillSyncMocks.syncBundledSkillsFromPackage.mockImplementation(() => ({
-      installed: ['reflect', 'worktrees'],
+      installed: ['reflect'],
       skippedExisting: ['codemap'],
       failed: [],
       staged: [],
@@ -388,7 +388,7 @@ describe('auto-update-checker/index', () => {
       body: {
         title: 'OMO-Slim Updated!',
         message:
-          'v0.9.1 → v0.9.11\nAdded bundled skills: reflect, worktrees\nRestart OpenCode to apply the plugin update.',
+          'v0.9.1 → v0.9.11\nAdded bundled skills: reflect\nRestart OpenCode to apply the plugin update.',
         variant: 'success',
         duration: 8000,
       },
@@ -410,10 +410,10 @@ describe('auto-update-checker/index', () => {
       installed: ['reflect'],
       skippedExisting: [],
       failed: [],
-      staged: ['worktrees'],
+      staged: ['deepwork'],
       adopted: [],
-      customized: ['worktrees', 'my-custom-skill'],
-      stagedThisSync: ['worktrees'],
+      customized: ['deepwork', 'my-custom-skill'],
+      stagedThisSync: ['deepwork'],
     }));
 
     const { createAutoUpdateCheckerHook } = await import(
@@ -429,7 +429,7 @@ describe('auto-update-checker/index', () => {
       body: {
         title: 'OMO-Slim Updated!',
         message:
-          'v0.9.1 → v0.9.11\nAdded bundled skills: reflect\nStaged skill updates require manual review: worktrees\nRestart OpenCode to apply the plugin update.',
+          'v0.9.1 → v0.9.11\nAdded bundled skills: reflect\nStaged skill updates require manual review: deepwork\nRestart OpenCode to apply the plugin update.',
         variant: 'success',
         duration: 8000,
       },

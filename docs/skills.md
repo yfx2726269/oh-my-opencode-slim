@@ -32,7 +32,6 @@ broader evidence only when the change's risk or uncertainty warrants it.
 | [`deepwork`](#deepwork) | Heavy/complex coding sessions workflow | `orchestrator` |
 | [`verification-planning`](#verification-planning) | Design project-specific evidence before implementation | `orchestrator` |
 | [`reflect`](#reflect) | Review repeated work and suggest reusable workflow improvements | `orchestrator` |
-| [`worktrees`](#worktrees) | Safe Git worktree lane management | `orchestrator` |
 | [`oh-my-opencode-slim`](#oh-my-opencode-slim) | Plugin configuration and self-improvement guidance | `orchestrator` |
 
 ---
@@ -210,28 +209,6 @@ agent-routing preferences, or prompts/config rules that you keep re-explaining.
 
 **When NOT to use:** one-off implementation tasks, speculative agent creation,
 or broad self-improvement ideas with no usage evidence.
-
----
-
-## worktrees
-
-**Safe Git worktree lane management for isolated coding.**
-
-`worktrees` is an orchestrator-only skill for managing Git worktrees as safe,
-isolated coding lanes. Instead of polluting your current branch or juggling stash
-state, the Orchestrator can set up lanes under `.slim/worktrees/<slug>/` and
-track them in `.slim/worktrees.json`.
-
-Other agents can be delegated tasks inside the worktree lane, but the Orchestrator coordinates the lifecycle, validation, and final integration.
-
-Safety defaults:
-- Pre-flight check on Git repo status and dirty worktrees.
-- Strict confirmation gates for all git modifications (`worktree add/remove`, `merge`, `rebase`, `cherry-pick`, `reset --hard`, branch operations).
-- Branch names default to `omo/<slug>` but respect custom user patterns.
-- Use a proportionate final-state verification plan before final integration,
-  including checks required by repository and release instructions.
-
-See **[Worktrees](worktrees.md)** for the detailed safety protocol.
 
 ---
 

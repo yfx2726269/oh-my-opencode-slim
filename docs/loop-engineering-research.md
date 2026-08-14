@@ -88,12 +88,12 @@ Osmani's framework identifies five primitives that compose a loop, plus durable 
 
 | Feature | Claude Code | Codex | OpenCode |
 |---------|-------------|-------|----------|
-| Git worktree support | Yes (`--worktree`) | Yes (built-in per thread) | Yes (orchestrator skill) |
+| Git worktree support | Yes (`--worktree`) | Yes (built-in per thread) | No |
 | Sub-agent isolation | Yes (`isolation: worktree`) | Yes (built-in) | Yes (apply-patch hook) |
-| Programmatic creation | Yes | Yes | No (skill-only, prompt-driven) |
+| Programmatic creation | Yes | Yes | No |
 | Loop integration | Yes | Yes | No (spec only) |
 
-**Verdict:** Claude Code and Codex have worktrees as runtime primitives integrated with their loop engines. OpenCode has worktrees as an orchestrator skill with apply-patch support, but no programmatic runtime integration yet.
+**Verdict:** Claude Code and Codex have worktrees as runtime primitives integrated with their loop engines. OpenCode ships no bundled worktrees skill; only the apply-patch hook tolerates external worktree paths, with no programmatic runtime integration yet.
 
 ### Skills (Project Knowledge)
 
@@ -216,7 +216,7 @@ In its purest form, Ralph is a Bash loop. That's it.
 | **Skills** | Mature | 7 bundled skills, per-agent permissions, auto-sync |
 | **Connectors/MCP** | Mature | 3 built-in MCPs, per-agent permission system |
 | **Sub-agents** | Mature | 9 agents, Background Job Board, session reuse |
-| **Worktrees** | Skill-only | Orchestrator skill, apply-patch hook support |
+| **Worktrees** | Not bundled | apply-patch hook tolerates external worktree paths |
 | **Automations** | Not implemented | Deferred to Phase 4 |
 | **Loop engine** | Spec only | Fully designed, not implemented |
 
@@ -234,7 +234,7 @@ The planned loop engineering runtime includes:
 
 ### The Gap
 
-OpenCode has 3 of 5 building blocks fully wired (skills, connectors, sub-agents), worktrees as a skill, and automations + loop engine as unimplemented specs. The sub-agent infrastructure is the strongest piece - the Background Job Board, session reuse, and native depth tracking are more structured than what Claude Code or Codex expose.
+OpenCode has 3 of 5 building blocks fully wired (skills, connectors, sub-agents), and automations + loop engine as unimplemented specs. The sub-agent infrastructure is the strongest piece - the Background Job Board, session reuse, and native depth tracking are more structured than what Claude Code or Codex expose.
 
 The missing piece is the outer loop itself: the scheduler that runs on a timer, spawns work, and keeps going without human intervention. Once that lands (Phase 1-2 of the spec), OpenCode will have a complete loop engineering stack.
 

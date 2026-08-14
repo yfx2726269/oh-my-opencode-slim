@@ -23,7 +23,6 @@
 | `deepwork/` | Orchestrator-only | Heavy coding sessions, multi-phase implementation, and risky refactors |
 | `verification-planning/` | Orchestrator-only | Project-specific evidence planning and verification affordances before non-trivial implementation |
 | `reflect/` | Orchestrator-only | Learning from repeated work and suggesting reusable improvements |
-| `worktrees/` | Orchestrator-only | Safe Git worktree lanes for parallel, risky, or isolated work |
 | `oh-my-opencode-slim/` | Orchestrator-only | Plugin configuration and self-improvement guidance |
 
 ### Installation Pipeline
@@ -59,7 +58,6 @@
   - `src/skills/deepwork/SKILL.md`
   - `src/skills/verification-planning/SKILL.md`
   - `src/skills/reflect/SKILL.md`
-  - `src/skills/worktrees/SKILL.md`
   - `src/skills/oh-my-opencode-slim/SKILL.md`
 - `package.json` scripts (`verify:release`, `build`) rely on these assets to ensure install-time skill availability
 

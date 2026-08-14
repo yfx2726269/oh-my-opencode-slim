@@ -579,7 +579,7 @@ ping all agents
 스킬은 에이전트의 시스템 프롬프트에 주입되어 판단, 워크플로, 도구 사용을
 안내하는 프롬프트 기반 지침입니다. 실행 중인 서버인 MCP와 달리 스킬은
 프로세스를 실행하지 않습니다. 작업에 맞춰 에이전트가 활성화하는 집중형
-플레이북입니다. 인스톨러는 8개의 스킬을 번들로 제공하고 플러그인 자동
+플레이북입니다. 인스톨러는 7개의 스킬을 번들로 제공하고 플러그인 자동
 업데이트 시 최신 상태로 유지하며, 로컬 사용자 지정은 보존합니다.
 
 > [!TIP]
@@ -593,7 +593,6 @@ ping all agents
 | <img src="img/skills/deepwork.webp" width="120" alt="Deepwork artifact"><br>[`deepwork`](src/skills/deepwork/SKILL.md) | 검토 게이트를 갖춘 대규모·고위험·다단계 코딩 세션용 구조화된 워크플로 | `orchestrator` | `/deepwork <task>` |
 | <img src="img/skills/verification-planning.webp" width="120" alt="Verification Planning artifact"><br>[`verification-planning`](src/skills/verification-planning/SKILL.md) | 중요한 변경 전에 프로젝트별 증거 경로를 미리 계획 | `orchestrator` | 중요한 작업 전 자동 |
 | <img src="img/skills/simplify.webp" width="120" alt="Simplify artifact"><br>[`simplify`](src/skills/simplify/SKILL.md) | 가독성과 유지보수성을 위한 동작 보존 단순화 | `oracle` | 단순화를 요청하거나 리뷰 중 |
-| <img src="img/skills/worktrees.webp" width="120" alt="Worktrees artifact"><br>[`worktrees`](src/skills/worktrees/SKILL.md) | 고위험 또는 병렬 작업을 위한 안전하고 격리된 코딩 레인으로 Git worktree 사용 | `orchestrator` | `work in a worktree` |
 | <img src="img/skills/clonedeps.webp" width="120" alt="Clonedeps artifact"><br>[`clonedeps`](src/skills/clonedeps/SKILL.md) | 에이전트가 라이브러리 내부를 검사하도록 의존성 소스를 로컬에 복제 | `orchestrator` | `clone dependencies` |
 | <img src="img/skills/reflect.webp" width="120" alt="Reflect artifact"><br>[`reflect`](src/skills/reflect/SKILL.md) | 반복되는 워크플로 마찰을 재사용 가능한 스킬, 에이전트 또는 설정으로 전환 | `orchestrator` | `/reflect` |
 | <img src="img/skills/oh-my-opencode-slim.webp" width="120" alt="oh-my-opencode-slim artifact"><br>[`oh-my-opencode-slim`](src/skills/oh-my-opencode-slim/SKILL.md) | 플러그인 설정 자체를 안전하게 구성하고 개선 | `orchestrator` | 설정 조정을 요청 |
@@ -648,7 +647,6 @@ bunx oh-my-opencode-slim@latest install --companion=yes
 | **[Multiplexer Integration](docs/multiplexer-integration.md)** | Tmux, Zellij, Herdr, cmux, 또는 kitty 페인에서 에이전트 작업을 실시간으로 확인 |
 | **[Codemap](docs/codemap.md)** | 계층형 코드맵을 생성하여 대규모 코드베이스를 빠르게 파악 |
 | **[Clonedeps](docs/clonedeps.md)** | 선택한 의존성 소스를 무시된 로컬 워크스페이스에 복제하여 검사 |
-| **[Worktrees](docs/worktrees.md)** | `.slim/worktrees/` lane을 사용해 격리된 병렬 또는 고위험 코딩 작업 수행 |
 | **[Preset Switching](docs/preset-switching.md)** | `/preset`으로 런타임에 에이전트 모델 프리셋 전환 |
 | **[Interview](docs/interview.md)** | 브라우저 기반 Q&A 흐름을 통해 거친 아이디어를 구조화된 마크다운 명세로 변환 |
 | **[Companion](docs/companion.md)** | 파싱, 도움말, 타입을 위한 플로팅 창 companion |
@@ -662,7 +660,7 @@ bunx oh-my-opencode-slim@latest install --companion=yes
 | **[Project Customization](docs/project-local-customization.md)** | 저장소별 커스텀 에이전트, 프롬프트 오버라이드, 에이전트별 스킬 및 우선순위 |
 | **[Background Orchestration](docs/background-orchestration.md)** | 네이티브 백그라운드 서브에이전트를 기반으로 한 스케줄러 우선 Orchestrator 모델 |
 | **[Maintainer Guide](docs/maintainers.md)** | 이슈 트리아지 규칙, 라벨 의미, 지원 라우팅, 저장소 유지보수 워크플로우 |
-| **[Skills](docs/skills.md)** | `simplify`, `codemap`, `clonedeps`, `deepwork`, `verification-planning`, `reflect`, `worktrees`, `oh-my-opencode-slim` 등 번들된 스킬 |
+| **[Skills](docs/skills.md)** | `simplify`, `codemap`, `clonedeps`, `deepwork`, `verification-planning`, `reflect`, `oh-my-opencode-slim` 등 번들된 스킬 |
 | **[MCPs](docs/mcps.md)** | `context7`, `gh_grep` 및 에이전트별 MCP 권한 동작 방식 |
 | **[Tools](docs/tools.md)** | `webfetch`, LSP 도구, 코드 검색, 포매터 등 내장 도구 기능 |
 
