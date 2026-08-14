@@ -21,6 +21,8 @@ const TEST_DIR = path.join(
   os.tmpdir(),
   `companion-updater-test-${process.pid}`,
 );
+/** 非 fork 版本号:注入后绕过 fork 禁用,用于测试原有安装/检查逻辑。 */
+const UPSTREAM_VERSION = '2.2.14';
 const originalXdg = process.env.XDG_DATA_HOME;
 const originalFetch = globalThis.fetch;
 
@@ -59,6 +61,39 @@ describe('companion updater', () => {
     expect(result).toMatchObject({ reason: 'custom-binary' });
   });
 
+  test('skips companion updates when the package is a fork build', async () => {
+    globalThis.fetch = (() => {
+      throw new Error('should not download in fork builds');
+    }) as unknown as typeof fetch;
+
+    const result = await ensureCompanionVersion({
+      config: { enabled: true },
+      packageVersion: '2.2.14-bit.1',
+    });
+
+    expect(result).toMatchObject({
+      status: 'skipped',
+      reason: 'not-published-by-fork',
+      binaryPath: getCompanionBinaryPath(),
+    });
+  });
+
+  test('skips companion updates by default in this fork repository', async () => {
+    // 本仓库 package.json version 为 2.2.14-bit.1(fork 标记),不注入版本号时应命中 fork 禁用。
+    globalThis.fetch = (() => {
+      throw new Error('should not download in fork builds');
+    }) as unknown as typeof fetch;
+
+    const result = await ensureCompanionVersion({
+      config: { enabled: true },
+    });
+
+    expect(result).toMatchObject({
+      status: 'skipped',
+      reason: 'not-published-by-fork',
+    });
+  });
+
   test('treats matching installed metadata as current', async () => {
     const bin = getCompanionBinaryPath();
     mkdirSync(path.dirname(bin), { recursive: true });
@@ -76,6 +111,7 @@ describe('companion updater', () => {
 
     const result = await ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
     });
 
     expect(result).toMatchObject({
@@ -88,6 +124,7 @@ describe('companion updater', () => {
   test('dry-run reports the install without downloading', async () => {
     const result = await ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
       dryRun: true,
     });
 
@@ -108,6 +145,7 @@ describe('companion updater', () => {
 
     const result = await ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
       manifest: {
         version: '0.1.2',
         tag: 'companion-v0.1.2',
@@ -133,6 +171,7 @@ describe('companion updater', () => {
 
     const result = await ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
       manifest: {
         version: '0.2.0',
         tag: 'companion-v0.2.0',
@@ -170,6 +209,7 @@ describe('companion updater', () => {
     const target = getCompanionTarget() ?? 'unsupported';
     const result = await ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
       manifest: {
         version: '0.2.0',
         tag: 'companion-v0.2.0',
@@ -196,6 +236,7 @@ describe('companion updater', () => {
 
     const result = await ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
       manifest: {
         version: '0.2.0',
         tag: 'companion-v0.2.0',
@@ -223,6 +264,7 @@ describe('companion updater', () => {
 
     const result = await ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
       manifest: {
         version: '0.2.0',
         tag: 'companion-v0.2.0',
@@ -308,6 +350,7 @@ describe('companion updater', () => {
 
     const result = ensureCompanionVersion({
       config: { enabled: true },
+      packageVersion: UPSTREAM_VERSION,
       manifest: {
         version: '0.2.0',
         tag: 'companion-v0.2.0',

@@ -14,6 +14,7 @@ import {
 import { homedir, platform, tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
+import packageJson from '../../package.json' with { type: 'json' };
 import type { CompanionConfig } from '../config/schema';
 import { getErrorMessage } from '../hooks/apply-patch/errors';
 import { crossSpawn } from '../utils/compat';
@@ -63,6 +64,14 @@ export const COMPANION_MANIFEST: CompanionManifest = {
       '33f5fd4b6c80155a019391e5efb13904ca9531ba8dd8c6cba30a161f1b07b764',
   },
 };
+
+/**
+ * 判断版本号是否带本 fork 的发布标记(形如 `2.2.14-bit.1`)。
+ * fork 不发布自己的 companion 二进制,带该标记时应禁用 companion 更新检查。
+ */
+export function isForkPackageVersion(version: string): boolean {
+  return version.includes('-bit.');
+}
 
 export function getCompanionTarget(): string | null {
   const p = process.platform;
@@ -126,6 +135,8 @@ export async function ensureCompanionVersion(options: {
   config?: CompanionConfig;
   manifest?: CompanionManifest;
   dryRun?: boolean;
+  /** 包版本号,默认取本包 package.json 的 version;仅供测试注入非 fork 版本。 */
+  packageVersion?: string;
   downloadTimeoutMs?: number;
   lockTimeoutMs?: number;
   lockStaleMs?: number;
@@ -140,6 +151,16 @@ export async function ensureCompanionVersion(options: {
 
   if (config.binaryPath?.trim()) {
     return { status: 'skipped', reason: 'custom-binary', binaryPath };
+  }
+
+  // fork 版本不发布 companion 二进制,禁用更新检查,不执行任何下载逻辑。
+  const packageVersion = options.packageVersion ?? packageJson.version;
+  if (isForkPackageVersion(packageVersion)) {
+    return {
+      status: 'skipped',
+      reason: 'not-published-by-fork',
+      binaryPath,
+    };
   }
 
   const target = getCompanionTarget();
