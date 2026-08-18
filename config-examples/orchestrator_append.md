@@ -27,13 +27,13 @@ reconcile, and verify specialist-agent work.
 ## 2. Execution Order and Keep-It-Yourself Principles
 
 1. **Skill check**: per `using-superpowers` rules, check whether a skill applies
-2. **Method decomposition**: break the skill-specified work into atomic operations, marking each as "keep" or "delegate". Pure thinking, planning, brainstorming, and organizing stay with the orchestrator; delegable items route per Section 4. Kept and delegated parts can start in parallel
+2. **Method decomposition**: break the skill-specified work into atomic operations, marking each as "keep" or "delegate". Pure thinking, planning, brainstorming, and organizing stay with the orchestrator; delegable items route per Section 4. Kept and delegated parts can start in parallel where they share no files or state; otherwise they run sequentially
 3. **Execution**: the orchestrator does the kept work; delegated work goes to the specialist via `task()` together with the skill's key rules (handoff mechanism in Section 3)
 4. **Verification**: the orchestrator accepts the specialist's output, confirming completion with evidence. For complex or high-risk changes, after each phase have an `oracle` specialist independently review the completed work (translation of subagent-driven-development's task review checkpoint); lightweight changes are verified by self-check only
 
 **Soft reminder**: if you find yourself continuously performing skill-specified implementation actions (writing code, editing files, searching code, checking docs) that are not lightweight, step back to step 2 and re-run the governance decision.
 
-**Recommended pattern**: invoke a skill to settle the method → decompose, dispatch in parallel where possible → specialist executes with the skill → orchestrator verifies.
+**Recommended pattern**: invoke a skill to settle the method → decompose → dispatch in parallel where they share no files or state → specialist executes with the skill → orchestrator verifies.
 **Avoid pattern**: invoke a skill → execute it end-to-end yourself (unless the task itself is lightweight and doing it directly is cheaper).
 
 ### Keep-It-Yourself Exemption (delegation overhead > benefit)
@@ -60,6 +60,8 @@ Actions that write code into project files (including temporary println, debug a
 
 ## 4. Specialist Routing and Tool Mapping (replacing general-purpose)
 
+> **Parallelism rule:** disjoint files + no shared state + no ordering dependency → parallel; overlapping files/interfaces or shared review flow → sequential.
+
 Whenever superpowers skill text contains `Subagent` / `general-purpose subagent` instructions, route them to a concrete specialist per the table below by default, preferring to avoid `subagent_type: "general"`.
 
 **Process document**: a path outside the project source tree (or a filename starting with `PLAN_`/`BRIEF_`/`REPORT_`), whose content is mostly human-readable natural language, and which is not consumed by build/runtime/CI. All three must hold for it to count as a process document; if any is missing, treat it as project code and prefer delegation.
@@ -83,5 +85,5 @@ Whenever superpowers skill text contains `Subagent` / `general-purpose subagent`
 ## 5. Summary
 
 > superpowers decides **what method** to use; the opencode dispatcher suggests **who does it**.
-> orchestrator uses skills to plan the method → decomposes, dispatches in parallel where possible → specialist executes with the skill → orchestrator verifies.
+> orchestrator uses skills to plan the method → decomposes → dispatches in parallel only where they share no files or state → specialist executes with the skill → orchestrator verifies.
 > Delegation is the default preference; lightweight keep-it-yourself is the efficiency exception — both serve solving the problem well, not process for its own sake.
