@@ -53,7 +53,7 @@ omo's specialists (explorer, fixer, oracle, librarian, designer, observer) are s
 
 > **Parallelism rule:** disjoint files + no shared state + no ordering dependency → parallel; overlapping files/interfaces or shared review flow → sequential.
 
-Whenever superpowers skill text contains `Subagent` / `general-purpose subagent` instructions, route them to a concrete sub-agent per the table below by default, preferring to avoid `subagent_type: "general"`.
+Whenever superpowers skill text contains `Subagent` / `general-purpose subagent` instructions, route them to a concrete sub-agent per the table below by default: every general task should resolve to a specific sub-agent from the table, not stay as `subagent_type: "general"`.
 
 **Process document**: a path outside the project source tree (or starting with `PLAN_`/`BRIEF_`/`REPORT_`), mostly human-readable natural language, not consumed by build/runtime/CI. All three must hold for it to count as a process document; otherwise treat it as project code.
 
