@@ -1,5 +1,10 @@
 import type { BackgroundJobStore, ContextFile } from '../../utils';
 import { log } from '../../utils/logger';
+import type { RevivedRunTracker } from './revived-run-tracker';
+import {
+  observeNonBusyRuntime,
+  STOP_CONFIRMATION_GRACE_MS,
+} from './stop-confirmation';
 
 export function createIdleReconciler(options: {
   backgroundJobBoard: BackgroundJobStore;
@@ -7,6 +12,7 @@ export function createIdleReconciler(options: {
   /** Called when a deferred inline error is terminalized at idle. */
   onErrorTerminalize?: (sessionID: string) => void;
   idleReconcileDelayMs: number;
+  stopConfirmationGraceMs?: number;
   isFallbackInProgress?: (sessionID: string) => boolean;
   hasInputWait: (sessionID: string) => boolean;
   getIdleSessionToken: (sessionID: string) => symbol;
@@ -19,6 +25,7 @@ export function createIdleReconciler(options: {
     contextFilesForPrompt(taskId: string): ContextFile[];
     prune(board: { taskIDs(): Set<string> }): void;
   };
+  revivedRunTracker?: RevivedRunTracker;
 }) {
   const idleReconcileTimers = new Map<string, ReturnType<typeof setTimeout>>();
   const childIdleReconcileTimers = new Map<
@@ -57,7 +64,7 @@ export function createIdleReconciler(options: {
     if (childIdleReconcileTimers.has(sessionID)) return;
     if (options.isFallbackInProgress?.(sessionID)) return;
 
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       childIdleReconcileTimers.delete(sessionID);
       if (options.isFallbackInProgress?.(sessionID)) return;
 
@@ -74,25 +81,37 @@ export function createIdleReconciler(options: {
         return;
       }
 
-      log('[task-session-manager] observed runtime-stopped job from idle', {
+      if (options.revivedRunTracker?.isTracked(sessionID, observedGeneration)) {
+        const terminalPublished = await options.revivedRunTracker.probe(
+          sessionID,
+          observedGeneration,
+        );
+        if (terminalPublished) return;
+      }
+
+      const updated = observeNonBusyRuntime({
+        backgroundJobBoard: options.backgroundJobBoard,
+        taskID: sessionID,
+        observedAt: idleObservedAt,
+        generation: observedGeneration,
+        graceMs: options.stopConfirmationGraceMs ?? STOP_CONFIRMATION_GRACE_MS,
+        lastStatusError:
+          'Runtime session is idle; task termination is unconfirmed.',
+        taskContextTracker: options.taskContextTracker,
+      });
+      if (updated?.state === 'stopped') {
+        log('[task-session-manager] confirmed runtime-stopped job from idle', {
+          sessionID,
+          alias: updated.alias,
+          parentSessionID: updated.parentSessionID,
+        });
+        return;
+      }
+      log('[task-session-manager] observed quiescent job from idle', {
         sessionID,
         alias: job.alias,
         parentSessionID: job.parentSessionID,
       });
-      options.backgroundJobBoard.markStopped(
-        sessionID,
-        'Background session stopped before a terminal task result was received.',
-        // The idle event itself happened after the last busy event. Preserve
-        // that ordering when timestamps share millisecond precision.
-        idleObservedAt + 1,
-        observedGeneration,
-      );
-      options.taskContextTracker.pendingManagedTaskIds.delete(sessionID);
-      options.backgroundJobBoard.addContext(
-        sessionID,
-        options.taskContextTracker.contextFilesForPrompt(sessionID),
-      );
-      options.taskContextTracker.prune(options.backgroundJobBoard);
     }, options.idleReconcileDelayMs).unref?.();
     childIdleReconcileTimers.set(sessionID, timer);
   }
@@ -103,11 +122,12 @@ export function createIdleReconciler(options: {
    * not) recover. Mirrors scheduleChildIdleReconciliation: delayed so a
    * fallback re-prompt can claim the session first, and cancelled by
    * live-busy recovery. Without this, a silent fallback failure leaves
-   * the job 'running' and idle reconciliation would mark it 'completed'.
+   * the job 'running' indefinitely.
    */
   function scheduleErrorTerminalize(
     sessionID: string,
     idleObservedAt: number,
+    observedGeneration: number,
   ): void {
     if (errorTerminalizeTimers.has(sessionID)) return;
     // If a fallback attempt is still in flight, defer to the timer
@@ -125,7 +145,9 @@ export function createIdleReconciler(options: {
         }
 
         const job = options.backgroundJobBoard.get(sessionID);
-        if (job?.state !== 'running') return;
+        if (job?.state !== 'running' || job.generation !== observedGeneration) {
+          return;
+        }
 
         // Busy after the idle means the session recovered (e.g. FG re-prompt).
         if (

@@ -47,7 +47,7 @@ OpenCode Core → Plugin Initialization (index.ts)
 1. **Config Loading**: `loadPluginConfig()` reads and validates plugin configuration
 2. **Agent Creation**: `createAgents()` instantiates agent definitions with prompts and permissions
 3. **Agent Configuration**: `getAgentConfigs()` merges defaults with user overrides and runtime presets
-4. **Tool Registration**: Tools are created conditionally based on config (council, cancel_task, webfetch, AST-grep)
+4. **Tool Registration**: Tools are created conditionally based on config (council, task_cancel, task_message, task_revive, webfetch, AST-grep)
 5. **MCP Registration**: Built-in MCPs are created (filesystem, resource, tools, etc.)
 6. **Multiplexer Setup**: Multiplexer session manager initialized for task tool sessions
 7. **Hook Initialization**: Auto-update checker, phase reminders, skill filters, etc.
@@ -63,11 +63,13 @@ OpenCode Core → Plugin Initialization (index.ts)
 3. **Config Validation**: Checks if current directory has valid plugin config
 4. **Snapshot Loading**: Reads agent models/variants from `tui-state.ts`
 5. **Live Updates**: Sets up interval to refresh snapshot every 1000ms
-6. **Sidebar Rendering**: Renders sidebar with:
+6. **Tmux registration**: Refreshes the active session-to-`TMUX_PANE`
+   registration for parent-aware child-pane routing
+7. **Sidebar Rendering**: Renders sidebar with:
    - Plugin header (OMO-Slim + version)
    - Config status warning (if invalid)
    - Agent list with model/variant details
-7. **Lifecycle Management**: Cleans up interval on dispose
+8. **Lifecycle Management**: Cleans up interval and owned tmux registration on dispose
 
 ### State Persistence Flow (tui-state.ts)
 

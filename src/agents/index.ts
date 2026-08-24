@@ -39,7 +39,13 @@ type AgentFactory = (
   customAppendPrompt?: string,
 ) => AgentDefinition;
 
-const CANCEL_TASK_ALLOWED_AGENTS = new Set(['orchestrator']);
+const TASK_CONTROL_TOOL_NAMES = [
+  'task_cancel',
+  'task_message',
+  'task_revive',
+  'task_status',
+  'task_result',
+] as const;
 const SAFE_AGENT_ALIAS_RE = /^[a-z][a-z0-9_-]*$/i;
 
 function getPrimaryModelFromOverride(
@@ -98,7 +104,6 @@ function buildAcpAgentDefinition(
     description,
     config: {
       model: config.wrapperModel ?? fallbackModel ?? DEFAULT_MODELS.oracle,
-      temperature: 0,
       prompt,
       permission: {
         read: 'deny',
@@ -127,7 +132,8 @@ function isSafeDisplayName(displayName: string): boolean {
  * Apply user-provided overrides to an agent's configuration.
  * Supports overriding model (string or priority array), variant, and temperature.
  * When model is an array, stores it as _modelArray for runtime fallback resolution
- * and clears config.model so OpenCode does not pre-resolve a stale value.
+ * and selects its primary entry for ephemeral subagents. The orchestrator leaves
+ * config.model unset so its live runtime selection is not overwritten.
  */
 function applyOverrides(
   agent: AgentDefinition,
@@ -138,6 +144,7 @@ function applyOverrides(
       agent._modelArray = override.model.map((m) =>
         typeof m === 'string' ? { id: m } : m,
       );
+      const primaryModel = agent._modelArray[0];
       // Subagents are ephemeral, freshly-created sessions with no prior
       // runtime state to preserve, so giving them a concrete config.model
       // at launch time (the array's primary entry) is safe — see #9100e59.
@@ -155,7 +162,17 @@ function applyOverrides(
       // added by #639). Leaving it undefined for the orchestrator lets
       // that later, precedence-aware guard be the sole source of truth.
       agent.config.model =
-        agent.name === 'orchestrator' ? undefined : agent._modelArray[0].id;
+        agent.name === 'orchestrator' ? undefined : primaryModel.id;
+      // Subagents launch with the primary model, so carry its inline variant
+      // into the OpenCode config too. An explicit agent-level variant below
+      // intentionally takes precedence.
+      if (
+        agent.name !== 'orchestrator' &&
+        override.variant === undefined &&
+        primaryModel.variant !== undefined
+      ) {
+        agent.config.variant = primaryModel.variant;
+      }
     } else {
       agent.config.model = override.model;
     }
@@ -221,7 +238,6 @@ function buildCustomAgentDefinition(
     description,
     config: {
       model: primaryModel ?? DEFAULT_MODELS.oracle,
-      temperature: 0.2,
       prompt: resolvePrompt(
         name,
         override.prompt,
@@ -285,9 +301,12 @@ function applyDefaultPermissions(
 
   // Respect explicit deny on question (councillor)
   const questionPerm = existing.question === 'deny' ? 'deny' : 'allow';
-  const cancelTaskPerm = CANCEL_TASK_ALLOWED_AGENTS.has(agent.name)
-    ? (existing.cancel_task ?? 'allow')
-    : 'deny';
+  const taskControlPermissions = Object.fromEntries(
+    TASK_CONTROL_TOOL_NAMES.map((toolName) => [
+      toolName,
+      existing[toolName] ?? (agent.name === 'orchestrator' ? 'allow' : 'deny'),
+    ]),
+  );
   const waitForUserPerm =
     agent.name === 'orchestrator'
       ? (existing.wait_for_user ?? 'allow')
@@ -296,7 +315,7 @@ function applyDefaultPermissions(
   agent.config.permission = {
     ...existing,
     question: questionPerm,
-    cancel_task: cancelTaskPerm,
+    ...taskControlPermissions,
     wait_for_user: waitForUserPerm,
     // Apply skill permissions as nested object under 'skill' key
     skill: {

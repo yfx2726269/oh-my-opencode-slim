@@ -113,7 +113,7 @@ Presets can also be switched at runtime without restarting using the `/preset` c
 | `presets` | object | - | Named preset configurations |
 |-----------|--------|---|-----------------------------|
 | `presets.<name>.<agent>.model` | string | - | Model ID in `provider/model` format |
-| `presets.<name>.<agent>.temperature` | number | - | Temperature (0–2) |
+| `presets.<name>.<agent>.temperature` | number | - | Optional temperature (0–2); when omitted, OpenCode chooses its default |
 | `presets.<name>.<agent>.variant` | string | - | Reasoning effort: `"low"`, `"medium"`, `"high"`, or `"max"` (provider-specific) |
 | `presets.<name>.<agent>.displayName` | string | - | Custom user-facing alias for the agent (e.g. `"advisor"` for `oracle`) |
 | `presets.<name>.<agent>.skills` | string[] | - | Skills the agent can use (`"*"`, `"!item"`, explicit list) |
@@ -315,6 +315,12 @@ Set `enabled: false` to keep idle reconciliation and background-job orchestratio
 without periodic wake prompts. See the
 [Background Orchestration](background-orchestration.md) guide for the concept,
 defaults, and examples.
+
+Configurations that still use the removed `backgroundJobs.continueOnIdle` key
+emit a deprecation warning and migrate its boolean value to
+`orchestratorWake.enabled`. An `orchestratorWake.enabled` value in the same
+config file takes precedence; replace the legacy key with that setting.
+
 `wallClockTimeoutMs` is a hard deadline that only supervises explicitly
 background native task calls; foreground calls or calls with `background`
 omitted are not supervised. It is independent from OpenCode's external

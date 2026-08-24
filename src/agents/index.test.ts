@@ -191,13 +191,22 @@ describe('orchestrator agent', () => {
     ).toBe('allow');
   });
 
-  test('orchestrator is allowed to invoke cancel_task', () => {
+  test('orchestrator is allowed to invoke task-control tools', () => {
     const agents = createAgents(runtimeFor());
     const orchestrator = agents.find((a) => a.name === 'orchestrator');
-    expect(
-      (orchestrator as { config: { permission: Record<string, unknown> } })
-        .config.permission.cancel_task,
-    ).toBe('allow');
+    const permission = (
+      orchestrator as { config: { permission: Record<string, unknown> } }
+    ).config.permission;
+
+    for (const toolName of [
+      'task_cancel',
+      'task_message',
+      'task_revive',
+      'task_status',
+      'task_result',
+    ]) {
+      expect(permission[toolName]).toBe('allow');
+    }
   });
 
   test('orchestrator is allowed to invoke wait_for_user', () => {
@@ -260,6 +269,31 @@ describe('orchestrator agent', () => {
 });
 
 describe('per-model variant in array config', () => {
+  test('generic subagents propagate primary inline variants to SDK configs', () => {
+    const config: PluginConfig = {
+      agents: {
+        explorer: {
+          model: [
+            { id: 'google/gemini-3-flash', variant: 'low' },
+            'openai/gpt-4o-mini',
+          ],
+        },
+        librarian: {
+          model: [
+            { id: 'anthropic/claude-haiku-4-5', variant: 'fast' },
+            'openai/gpt-4o-mini',
+          ],
+        },
+      },
+    };
+    const configs = getAgentConfigs(runtimeFor(config));
+
+    expect(configs.explorer.model).toBe('google/gemini-3-flash');
+    expect(configs.explorer.variant).toBe('low');
+    expect(configs.librarian.model).toBe('anthropic/claude-haiku-4-5');
+    expect(configs.librarian.variant).toBe('fast');
+  });
+
   test('subagent stores model array with per-model variants', () => {
     const config: PluginConfig = {
       agents: {
@@ -278,6 +312,24 @@ describe('per-model variant in array config', () => {
       { id: 'openai/gpt-4o-mini' },
     ]);
     expect(explorer?.config.model).toBe('google/gemini-3-flash');
+  });
+
+  test('explicit agent-level variant overrides the primary inline variant', () => {
+    const configs = getAgentConfigs(
+      runtimeFor({
+        agents: {
+          librarian: {
+            model: [
+              { id: 'anthropic/claude-haiku-4-5', variant: 'fast' },
+              'openai/gpt-4o-mini',
+            ],
+            variant: 'high',
+          },
+        },
+      }),
+    );
+
+    expect(configs.librarian.variant).toBe('high');
   });
 
   test('top-level variant preserved alongside per-model variants', () => {
@@ -353,31 +405,39 @@ describe('tool permissions', () => {
     expect(agents.some((a) => a.name === 'alpha')).toBe(false);
   });
 
-  test('oracle is denied access to cancel_task', () => {
+  test('oracle is denied access to task-control tools by default', () => {
     const agents = createAgents(runtimeFor());
+    const oracle = agents.find((a) => a.name === 'oracle');
+    const permission = (
+      oracle as { config: { permission: Record<string, unknown> } }
+    ).config.permission;
+
+    for (const toolName of [
+      'task_cancel',
+      'task_message',
+      'task_revive',
+      'task_status',
+      'task_result',
+    ]) {
+      expect(permission[toolName]).toBe('deny');
+    }
+  });
+
+  test('explicit task_cancel permission overrides the default gate', () => {
+    const agents = createAgents(
+      runtimeFor({
+        agents: {
+          oracle: {
+            permission: { task_cancel: 'allow' },
+          },
+        },
+      }),
+    );
     const oracle = agents.find((a) => a.name === 'oracle');
     expect(
       (oracle as { config: { permission: Record<string, unknown> } }).config
-        .permission.cancel_task,
-    ).toBe('deny');
-  });
-
-  test('explorer is denied access to cancel_task', () => {
-    const agents = createAgents(runtimeFor());
-    const explorer = agents.find((a) => a.name === 'explorer');
-    expect(
-      (explorer as { config: { permission: Record<string, unknown> } }).config
-        .permission.cancel_task,
-    ).toBe('deny');
-  });
-
-  test('fixer is denied access to cancel_task', () => {
-    const agents = createAgents(runtimeFor());
-    const fixer = agents.find((a) => a.name === 'fixer');
-    expect(
-      (fixer as { config: { permission: Record<string, unknown> } }).config
-        .permission.cancel_task,
-    ).toBe('deny');
+        .permission.task_cancel,
+    ).toBe('allow');
   });
 
   test('subagents are denied access to wait_for_user', () => {
@@ -612,6 +672,58 @@ describe('getAgentConfigs', () => {
     const configs = getAgentConfigs(runtimeFor());
     expect(configs.orchestrator.description).toBeDefined();
     expect(configs.explorer.description).toBeDefined();
+  });
+
+  test('omits temperature from default SDK agent configs', () => {
+    const configs = getAgentConfigs(
+      runtimeFor({
+        disabled_agents: [],
+        council: councilConfig(),
+        agents: {
+          reviewer: { model: 'test/reviewer' },
+        },
+        acpAgents: {
+          bridge: {
+            command: 'bridge-acp',
+            args: [],
+            env: {},
+            timeoutMs: 0,
+            permissionMode: 'ask',
+          },
+        },
+      }),
+    );
+
+    for (const name of [
+      'orchestrator',
+      'explorer',
+      'librarian',
+      'oracle',
+      'designer',
+      'fixer',
+      'observer',
+      'council',
+      'councillor',
+      'councillor-alpha',
+      'reviewer',
+      'bridge',
+    ]) {
+      expect(Object.hasOwn(configs[name], 'temperature')).toBe(false);
+    }
+  });
+
+  test('passes explicit temperature overrides to the SDK config', () => {
+    const configs = getAgentConfigs(
+      runtimeFor({
+        agents: {
+          explorer: { temperature: 0.5 },
+          fixer: { temperature: 0 },
+        },
+      }),
+    );
+
+    expect(configs.explorer.temperature).toBe(0.5);
+    expect(configs.fixer.temperature).toBe(0);
   });
 });
 

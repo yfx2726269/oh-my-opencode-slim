@@ -36,8 +36,8 @@ The main idea is simple: instead of forcing one model to do everything, the plug
 - **[Background orchestration](docs/background-orchestration.md)** - the
   Orchestrator dispatches specialists as background tasks, tracks them, and
   reconciles results before continuing - parallel work by default.
-- **[Bundled skills](#skills)** - prompt-based workflows like `codemap`,
-  `verification-planning`, and `reflect`, assigned per agent.
+- **[Bundled skills](#skills)** - prompt-based workflows like `deepwork`,
+  `codemap`, `verification-planning`, and `reflect`, assigned per agent.
 - **[Council](docs/council.md)** - run multiple models in parallel on the same
   question and synthesize a single answer with `@council`.
 - **[Companion](docs/companion.md)** - an optional floating desktop window
@@ -108,39 +108,6 @@ have Bun installed:
 npx oh-my-opencode-slim@latest install
 ```
 
-### Installing this Fork
-
-This repository is a personal fork of oh-my-opencode-slim. The fork is
-distributed **via git only** — the npm package name stays the upstream
-`oh-my-opencode-slim` and this fork does not publish to npm. Add the fork
-repository (`bit-self` branch) directly as the plugin source:
-
-```json
-{
-  "plugin": ["git+https://github.com/yfx2726269/oh-my-opencode-slim.git#bit-self"]
-}
-```
-
-Alternatively, clone, build, and point the plugin entry at the local path:
-
-```bash
-git clone -b bit-self https://github.com/yfx2726269/oh-my-opencode-slim.git ~/repos/oh-my-opencode-slim
-cd ~/repos/oh-my-opencode-slim
-bun install
-bun run build
-bun dist/cli/index.js install
-```
-
-Fork versions carry a `-bit.` prerelease marker (e.g. `2.2.14-bit.1`). In fork
-builds the companion update check and the plugin's own npm auto-update check
-are disabled, because neither the companion binary nor the npm package is
-published by this fork.
-
-Recommended prompt/configuration templates for this fork live in
-[`config-examples/`](config-examples/) — see
-[`config-examples/README.md`](config-examples/README.md) for install notes and
-the differences from the upstream defaults.
-
 ### Run from Master
 
 Use this if you want the latest code, easier bug fixes, or a local setup for
@@ -164,34 +131,6 @@ git pull
 bun install
 bun run build
 ```
-
-### OpenCode v2 (`opencode2`) Compatibility
-
-The plugin is **dual-compatible**: the same published package installs and runs
-on both OpenCode v1 (`opencode`) and OpenCode v2 (`opencode2`).
-
-- The package default export is `{ id, server, setup }`. v1 loads `server` (the
-  classic plugin function); v2 loads `setup` (the v2 promise-plugin adapter).
-- v2 loads the self-contained `./server` build (`dist/server.js`) via the
-  `server` export subpath, so no extra dependencies need to be resolvable on the
-  v2 host (except the optional native `@ast-grep/napi` and `jsdom` for the
-  ast-grep / webfetch tools).
-
-To use it with `opencode2`, add the package to your v2 config
-(`~/.config/opencode2/opencode.json`):
-
-```json
-{
-  "plugin": ["oh-my-opencode-slim@latest"]
-}
-```
-
-Then run `opencode2`. The orchestrator + specialist agents, tools, slash
-commands (`/reflect`, `/loop`), and the system-prompt / message
-transforms all work on v2. Configure agent models and any MCP servers in your
-v2 `opencode.json` (v2 has no programmatic MCP-registration hook, so built-in
-MCPs must be declared in config). See `docs/opencode-v2-compatibility.md` for the full
-feature matrix and limitations.
 
 ### Getting Started
 
@@ -641,7 +580,7 @@ If any agent fails to respond, check your provider authentication and config fil
 Skills are prompt-based instructions injected into an agent's system prompt to
 guide decisions, workflows, and tool use. Unlike MCPs (which are running
 servers), a skill runs no process — it is a focused playbook an agent activates
-when the task calls for it. The installer bundles six skills and keeps them
+when the task calls for it. The installer bundles eight skills and keeps them
 updated on plugin auto-update; local customizations are preserved.
 
 > [!TIP]
@@ -652,8 +591,10 @@ updated on plugin auto-update; local customizations are preserved.
 | Skill | Purpose | Default agent | How to invoke |
 |:-----:|---------|---------------|---------------|
 | <img src="img/skills/codemap.webp" width="120" alt="Codemap artifact"><br>[`codemap`](src/skills/codemap/SKILL.md) | Hierarchical repository maps so agents understand codebases without re-reading everything | `orchestrator` | `run codemap` |
+| <img src="img/skills/deepwork.webp" width="120" alt="Deepwork artifact"><br>[`deepwork`](src/skills/deepwork/SKILL.md) | Structured workflow for large, risky, multi-phase coding sessions with review gates | `orchestrator` | `/deepwork <task>` |
 | <img src="img/skills/verification-planning.webp" width="120" alt="Verification Planning artifact"><br>[`verification-planning`](src/skills/verification-planning/SKILL.md) | Plans a project-specific evidence path before non-trivial changes | `orchestrator` | automatic before non-trivial work |
 | <img src="img/skills/simplify.webp" width="120" alt="Simplify artifact"><br>[`simplify`](src/skills/simplify/SKILL.md) | Behavior-preserving simplification for readability and maintainability | `oracle` | ask for simplification or during review |
+| <img src="img/skills/worktrees.webp" width="120" alt="Worktrees artifact"><br>[`worktrees`](src/skills/worktrees/SKILL.md) | Git worktrees as safe, isolated coding lanes for risky or parallel work | `orchestrator` | `work in a worktree` |
 | <img src="img/skills/clonedeps.webp" width="120" alt="Clonedeps artifact"><br>[`clonedeps`](src/skills/clonedeps/SKILL.md) | Clones dependency source locally so agents can inspect library internals | `orchestrator` | `clone dependencies` |
 | <img src="img/skills/reflect.webp" width="120" alt="Reflect artifact"><br>[`reflect`](src/skills/reflect/SKILL.md) | Turns repeated workflow friction into reusable skills, agents, or config | `orchestrator` | `/reflect` |
 | <img src="img/skills/oh-my-opencode-slim.webp" width="120" alt="oh-my-opencode-slim artifact"><br>[`oh-my-opencode-slim`](src/skills/oh-my-opencode-slim/SKILL.md) | Configures and safely improves the plugin setup itself | `orchestrator` | ask to tune your setup |
@@ -710,6 +651,7 @@ Use this section as a map: start with installation, then jump to features, confi
 | **[Multiplexer Integration](docs/multiplexer-integration.md)** | Watch agents work live in Tmux, Zellij, Herdr, cmux, or kitty panes |
 | **[Codemap](docs/codemap.md)** | Generate hierarchical codemaps to understand large codebases faster |
 | **[Clonedeps](docs/clonedeps.md)** | Clone selected dependency source into an ignored local workspace for inspection |
+| **[Worktrees](docs/worktrees.md)** | Use `.slim/worktrees/` lanes for isolated parallel or risky coding work |
 | **[Preset Switching](docs/preset-switching.md)** | Switch agent model presets at runtime with `/preset` |
 | **[Interview](docs/interview.md)** | Turn rough ideas into a structured markdown spec through a browser-based Q&A flow |
 | **[Companion](docs/companion.md)** | Floating window companion for parsing, help, and types |
@@ -723,7 +665,7 @@ Use this section as a map: start with installation, then jump to features, confi
 | **[Project Customization](docs/project-local-customization.md)** | Repository-specific custom agents, prompt overrides, per-agent skills, and precedence |
 | **[Background Orchestration](docs/background-orchestration.md)** | Scheduler-first orchestrator model built around native background subagents |
 | **[Maintainer Guide](docs/maintainers.md)** | Issue triage rules, label meanings, support routing, and repo maintenance workflow |
-| **[Skills](docs/skills.md)** | Bundled skills such as `simplify`, `codemap`, `clonedeps`, `verification-planning`, `reflect`, and `oh-my-opencode-slim` |
+| **[Skills](docs/skills.md)** | Bundled skills such as `simplify`, `codemap`, `clonedeps`, `deepwork`, `verification-planning`, `reflect`, `worktrees`, and `oh-my-opencode-slim` |
 | **[MCPs](docs/mcps.md)** | `context7`, `gh_grep`, and how MCP permissions work per agent |
 | **[Tools](docs/tools.md)** | Built-in tool capabilities like `webfetch`, LSP tools, code search, and formatters |
 
@@ -736,7 +678,7 @@ Use this section as a map: start with installation, then jump to features, confi
   <p><sub>Every merged contribution leaves a mark on the realm.</sub></p>
 
   <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-95-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-103-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </div>
 
@@ -873,6 +815,18 @@ Use this section as a map: start with installation, then jump to features, confi
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/adevwithpurpose"><img src="https://avatars.githubusercontent.com/u/197252873?v=4?s=100" width="100px;" alt="adevwithpurpose"/><br /><sub><b>adevwithpurpose</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=adevwithpurpose" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://space.bilibili.com/67279156"><img src="https://avatars.githubusercontent.com/u/26923626?v=4?s=100" width="100px;" alt="Gold John King"/><br /><sub><b>Gold John King</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=GoldJohnKing" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/pxmpsdev"><img src="https://avatars.githubusercontent.com/u/180872771?v=4?s=100" width="100px;" alt="pxmps"/><br /><sub><b>pxmps</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=pxmpsdev" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/raphaelwdrf"><img src="https://avatars.githubusercontent.com/u/61286068?v=4?s=100" width="100px;" alt="raphaelwdrf"/><br /><sub><b>raphaelwdrf</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=raphaelwdrf" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/KomeijiReimu"><img src="https://avatars.githubusercontent.com/u/118449321?v=4?s=100" width="100px;" alt="Brant"/><br /><sub><b>Brant</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=KomeijiReimu" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ermanhavuc"><img src="https://avatars.githubusercontent.com/u/29822518?v=4?s=100" width="100px;" alt="Erman HAVUÇ"/><br /><sub><b>Erman HAVUÇ</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=ermanhavuc" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/HeZ2z"><img src="https://avatars.githubusercontent.com/u/142383180?v=4?s=100" width="100px;" alt="HeZzz"/><br /><sub><b>HeZzz</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=HeZ2z" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Qiaoyi-Li"><img src="https://avatars.githubusercontent.com/u/76148131?v=4?s=100" width="100px;" alt="Qiaoyi Li"/><br /><sub><b>Qiaoyi Li</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=Qiaoyi-Li" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://arpankanwer.ai.studio/"><img src="https://avatars.githubusercontent.com/u/35032317?v=4?s=100" width="100px;" alt="Birarpanjot Singh Kanwer"/><br /><sub><b>Birarpanjot Singh Kanwer</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=arpankanwer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Iams4kura"><img src="https://avatars.githubusercontent.com/u/126048986?v=4?s=100" width="100px;" alt="s4kura"/><br /><sub><b>s4kura</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=Iams4kura" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/zjm54321"><img src="https://avatars.githubusercontent.com/u/20168947?v=4?s=100" width="100px;" alt="落花有意"/><br /><sub><b>落花有意</b></sub></a><br /><a href="https://github.com/alvinunreal/oh-my-opencode-slim/commits?author=zjm54321" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

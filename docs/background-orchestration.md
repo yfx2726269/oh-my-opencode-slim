@@ -30,13 +30,17 @@ enabled:
 OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true opencode
 ```
 
-The required native/background-control tools are:
+The task API and background-control tools are:
 
 | Tool | Purpose |
 |------|---------|
 | `task(..., background: true)` | Start a specialist in the background and immediately return a task ID |
 | hook-driven completion | OpenCode injects terminal background task results automatically |
-| `cancel_task` | Plugin-provided tool to cancel a tracked background task by task ID or Background Job Board alias |
+| `task_status` | Check the status of a tracked task |
+| `task_result` | Retrieve a tracked task's result |
+| `task_message` | Queue a non-interrupting message and return `queued` |
+| `task_cancel` | Stop a generation while retaining its session |
+| `task_revive` | Resume a retained session with a new instruction |
 | `wait_for_user` | Plugin-provided orchestrator tool that pauses automatic orchestrator wakes while the user performs external manual work |
 
 If these are not available, the scheduler cannot use the default background
@@ -144,7 +148,7 @@ Rules:
 - Review tasks can run in parallel with read-only discovery, but not with edits
   they are supposed to review.
 
-### 4. Wait and cancel
+### 4. Wait, message, cancel, and revive
 
 Background tasks are not complete until OpenCode injects their terminal result or
 hook-driven completion marks them terminal.
@@ -156,23 +160,38 @@ The orchestrator should use background completion events to:
 - collect outputs before final response,
 - surface failures or blocked tasks clearly.
 
-The orchestrator should use `cancel_task` only when the user asks, or when a
-running lane is obsolete, wrong, or conflicts with a safer replacement plan.
-Cancellation is not rollback: if cancelling a writer, inspect its partial file
-changes before launching a replacement lane.
+Use `task_status` to inspect a task and `task_result` to collect its result.
+`task_message` queues a non-interrupting message and returns `queued`; it does
+not stop the current generation. Use `task_cancel` to stop a generation while
+retaining its session, then inspect and reconcile any partial file changes before
+launching replacement work. Use `task_revive` to resume a retained session with a
+new instruction.
+
+A cancelled or errored retained session may be revived immediately once its
+retained state has been verified safe. Acknowledgement controls parent and
+job-board consumption and reusable-pool display, not same-session revival.
 
 Terminal jobs are reconciled automatically after their result is injected into
 the orchestrator session. That lifecycle state is not proof the output was used;
 the orchestrator must still verify it consumed the relevant result before
-finalizing. Separately, the default-on orchestrator wake scheduler may prompt an
+finalizing.
+
+To stop self-reinforcing acknowledgment loops, a brand-new `task` spawn is
+refused while the parent still owns an unreconciled terminal job with the same
+agent and an exactly matching objective. The refusal names the existing task ID
+and directs the caller to `task_result`; once that result has been retrieved,
+the same objective may be dispatched again for follow-up work.
+
+Separately, the default-on orchestrator wake scheduler may prompt an
 idle parent with incomplete todos after continuous idle time; it does not depend
 on the local job board.
 
 After a full OpenCode or plugin restart, persisted running background-task
 history is rehydrated into the local job board and immediately reconciled against
-live host session status. A missing or idle child is therefore surfaced as
-`stopped, unreconciled`, while a busy child remains running; status lookup
-failures remain uncertain rather than being treated as completion.
+live host session status. A missing or idle child is a stop candidate: after a
+5s confirmation grace it is surfaced as `stopped, unreconciled`, while a busy
+child remains running; status lookup failures remain uncertain rather than being
+treated as completion.
 
 Specialist outputs are inputs, not final truth. The orchestrator reconciles them
 against each other and the original user goal.
@@ -312,6 +331,11 @@ The prompt/runtime treats background tasks as a small job board:
 | result | Final task output once terminal |
 | status certainty | `status uncertain` when the live status map is malformed or unavailable; it never implies completion |
 
+Cancelled and errored sessions can remain retained for a later `task_revive`.
+They may be revived immediately once their retained state has been verified safe.
+Acknowledgement controls parent and job-board consumption and reusable-pool
+display, not same-session revival.
+
 The current todo list can represent user-visible work, but task IDs and file
 ownership need to be explicit in the orchestrator's working context.
 
@@ -438,17 +462,22 @@ liveness authority. After a tracked task launches, the plugin periodically
 checks that single map for every board job still marked `running`, while normal
 session events remain the fast path.
 
-`busy` and `retry` confirm that a job is live. An explicit `idle` state or an
-absent session in an otherwise valid map records `stopped, unreconciled` rather
-than `completed`: it means execution ended before a native terminal task result
-was delivered, not that the task succeeded. Stopped sessions are never reusable
-and stay visible to the parent for recovery. A later live `busy` observation can
-revive them, and only explicit terminal task output proves completion, error, or
-cancellation.
+`busy` and `retry` confirm that a job is live and reset any pending stop
+confirmation. An explicit `idle` state or an absent session in an otherwise
+valid map is not immediately terminal: the first observation starts a 5s
+confirmation grace and keeps the job `running, status uncertain`. Repeat
+non-busy evidence after that grace records `stopped, unreconciled` rather than
+`completed`: it means execution ended before a native terminal task result was
+delivered, not that the task succeeded. Stopped sessions are never reusable and
+stay visible to the parent for recovery. A later live `busy` observation can
+revive an unreconciled stopped job. After the parent has been woken and the stop
+acknowledged, stale busy cannot flip the job back to running. Only explicit
+terminal task output proves completion, error, or cancellation.
 
 Malformed status entries and failed status requests are surfaced as `status
-uncertain`; they never prove that a job stopped or completed. Each observation
-is generation-aware, so a delayed response cannot modify a relaunched task.
+uncertain`; they never prove that a job stopped or completed and do not confirm
+a pending stop. Each observation is generation-aware, so a delayed response
+cannot modify a relaunched task.
 
 ### Opt-in Wall-clock Supervisor
 

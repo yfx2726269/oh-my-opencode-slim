@@ -131,6 +131,23 @@ Edit `~/.config/opencode/oh-my-opencode-slim.json` (or `.jsonc`):
 }
 ```
 
+The Herdr adapter works with Herdr **0.8.0+**. Install Herdr's official
+OpenCode lifecycle integration separately:
+
+```bash
+herdr integration install opencode
+```
+
+For Marketplace discoverability, publish this repository with the required
+`herdr-plugin` repository topic, then install it with:
+
+```bash
+herdr plugin install alvinunreal/oh-my-opencode-slim
+```
+
+The Marketplace entry describes this OpenCode plugin's Herdr adapter. It does
+not install a standalone native Herdr runtime plugin or lifecycle reporter.
+
 **cmux only:**
 
 ```jsonc
@@ -308,6 +325,19 @@ OpenCode pane (resolved from the parent pane's `ZELLIJ_PANE_ID` via
 `list-panes`), even if another Zellij tab is focused when a subagent starts.
 If the parent pane cannot be resolved, the tab target is omitted and Zellij
 places the pane in whatever tab it has focused — no tab id is guessed.
+
+### Tmux attached-session targeting
+
+When multiple local TUI clients attach to one OpenCode server from different
+tmux sessions, each TUI records its active OpenCode session and `TMUX_PANE`.
+Child panes and layout updates target the tmux pane registered by their parent
+session, so each attached root session keeps its subagents beside itself.
+
+Registrations are session-scoped, refreshed while the TUI is active, and expire
+after 30 seconds without a heartbeat. If no fresh registration exists,
+or tmux rejects a registered target, pane creation falls back to the server
+process's original `TMUX_PANE`. This preserves direct/local TUI behavior and
+avoids losing subagent visibility after an attached pane closes unexpectedly.
 
 ### Zellij details
 
