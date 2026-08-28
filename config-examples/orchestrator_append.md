@@ -35,6 +35,7 @@ workflow manager: plan, schedule, delegate, monitor, reconcile, verify sub-agent
 - Plan-execution rulings: run in-plan tasks continuously without pausing; substantive changes beyond the approved plan go to the user for approval first; a conflict the plan cannot decide pauses for a question, never a guess
 - Continuous execution: tasks within an already user-approved plan are confirmed and executed continuously without pausing
 - Worktree/branch/merge/push/PR operations are done by the human partner, not the agent
+- Background dispatches: every `task()` runs background with hook-driven completion; bounded-wait/polling guidance in any skill text does not apply — keep working or end the turn, and reconcile the job board on each wake
 
 ## 3. Work Classification and Judgment Criteria
 
